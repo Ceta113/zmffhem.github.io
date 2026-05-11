@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fermat Primality Test</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+–bg: #ffffff;
+–text: #111111;
+–dim: #888888;
+–border: #dddddd;
+}
+
+body {
+background: var(–bg);
+color: var(–text);
+font-family: ‘IBM Plex Sans KR’, sans-serif;
+min-height: 100vh;
+display: flex;
+justify-content: center;
+padding: 60px 20px 80px;
+}
+
+.container { width: 100%; max-width: 560px; }
+
+h1 {
+font-family: ‘IBM Plex Mono’, monospace;
+font-size: 12px;
+font-weight: 500;
+letter-spacing: 0.1em;
+color: var(–dim);
+margin-bottom: 36px;
+}
+
+/* 입력 */
+.input-group {
+display: flex;
+border: 1.5px solid var(–text);
+margin-bottom: 14px;
+}
+
+input[type=“text”] {
+flex: 1;
+border: none;
+outline: none;
+font-family: ‘IBM Plex Mono’, monospace;
+font-size: 22px;
+font-weight: 500;
+padding: 13px 16px;
+color: var(–text);
+background: transparent;
+min-width: 0;
+}
+
+input[type=“text”]::placeholder { color: #cccccc; }
+
+button#runBtn {
+font-family: ‘IBM Plex Mono’, monospace;
+font-size: 11px;
+font-weight: 600;
+letter-spacing: 0.1em;
+background: var(–text);
+color: var(–bg);
+border: none;
+padding: 0 22px;
+cursor: pointer;
+transition: opacity 0.15s;
+white-space: nowrap;
+}
+
+button#runBtn:hover { opacity: 0.7; }
+button#runBtn:disabled { opacity: 0.4; cursor: default; }
+
+.rounds-row {
+display: flex;
+align-items: center;
+gap: 14px;
+margin-bottom: 36px;
+}
+
+.rounds-label {
+font-family: ‘IBM Plex Mono’, monospace;
+font-size: 10px;
+letter-spacing: 0.1em;
+color: var(–dim);
+white-space: nowrap;
+}
+
+input[type=“range”] {
+flex: 1;
+-webkit-appearance: none;
+height: 1px;
+background: #cccccc;
+outline: none;
+cursor: pointer;
+}
+
+input[type=“range”]::-webkit-slider-thumb {
+-webkit-appearance: none;
+width: 12px;
+height: 12px;
+background: var(–text);
+border-radius: 50%;
+cursor: pointer;
+}
+
+.rounds-val {
+font-family: ‘IBM Plex Mono’, monospace;
+font-size: 12px;
+color: var(–text);
+min-width: 20px;
+text-align: right;
+}
+
+hr { border: none; border-top: 1px solid var(–border); margin-bottom: 32px; }
+
+/* 결과 */
+#result { display: none; }
+#result.visible { display: block; }
+
+.verdict-line {
+display: flex;
+align-items: center;
+gap: 14px;
+margin-bottom: 32px;
+flex-wrap: wrap;
+}
+
+.verdict-n {
+font-family: ‘IBM Plex Mono’, monospace;
+font-size: 38px;
+font-weight: 600;
+letter-spacing: -0.02em;
+word-break: break-all;
+line-height: 1.1;
+}
+
+.verdict-badge {
+font-family: ‘IBM Plex Mono’, monospace;
+font-size: 11px;
+font-weight: 600;
+letter-spacing: 0.1em;
+padding: 4px 9px;
+border: 1.5px solid var(–text);
+white-space: nowrap;
+}
+
+.verdict-badge.prime     { background: var(–text); color: var(–bg); }
+.verdict-badge.composite { background: var(–bg);   color: var(–text); }
+.verdict-badge.error     { border-color: var(–dim); color: var(–dim); }
+
+/* 라운드 그리드 */
+.section-label {
+font-family: ‘IBM Plex Mono’, monospace;
+font-size: 10px;
+letter-spacing: 0.1em;
+color: var(–dim);
+text-transform: uppercase;
+margin-bottom: 10px;
+}
+
+.rounds-grid {
+display: flex;
+flex-wrap: wrap;
+gap: 5px;
+margin-bottom: 28px;
+}
+
+.rcell {
+width: 34px;
+height: 34px;
+border: 1.5px solid var(–border);
+display: flex;
+align-items: center;
+justify-content: center;
+font-family: ‘IBM Plex Mono’, monospace;
+font-size: 10px;
+color: #cccccc;
+position: relative;
+cursor: default;
+background: var(–bg);
+transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.rcell.testing {
+border-color: var(–text);
+color: var(–text);
+animation: blink 0.45s infinite;
+}
+
+@keyframes blink {
+0%,100% { opacity: 1; }
+50%      { opacity: 0.3; }
+}
+
+.rcell.pass {
+background: var(–text);
+border-color: var(–text);
+color: var(–bg);
+animation: pop 0.18s ease;
+}
+
+.rcell.fail {
+background: var(–bg);
+border-color: var(–text);
+color: var(–text);
+animation: pop 0.18s ease;
+}
+
+@keyframes pop {
+0%   { transform: scale(0.75); }
+65%  { transform: scale(1.1); }
+100% { transform: scale(1); }
+}
+
+/* 툴팁 */
+.rcell:hover .tip { display: block; }
+.tip {
+display: none;
+position: absolute;
+bottom: calc(100% + 7px);
+left: 50%;
+transform: translateX(-50%);
+background: var(–text);
+color: var(–bg);
+font-family: ‘IBM Plex Mono’, monospace;
+font-size: 9px;
+white-space: nowrap;
+padding: 4px 7px;
+z-index: 10;
+pointer-events: none;
+line-height: 1.5;
+}
+.tip::after {
+content: ‘’;
+position: absolute;
+top: 100%; left: 50%;
+transform: translateX(-50%);
+border: 4px solid transparent;
+border-top-color: var(–text);
+}
+
+/* 수식 로그 */
+.eq-log { margin-bottom: 28px; }
+
+.eq-row {
+display: grid;
+grid-template-columns: 20px 1fr auto;
+align-items: center;
+gap: 10px;
+padding: 7px 0;
+border-bottom: 1px solid var(–border);
+font-family: ‘IBM Plex Mono’, monospace;
+font-size: 11px;
+opacity: 0;
+transform: translateY(3px);
+transition: opacity 0.18s, transform 0.18s;
+}
+
+.eq-row.show { opacity: 1; transform: translateY(0); }
+
+.eq-idx  { color: var(–dim); font-size: 10px; }
+.eq-body { color: var(–text); }
+.eq-body .aval { color: var(–dim); }
+
+.eq-res      { font-weight: 600; }
+.eq-res.ok   { color: var(–text); }
+.eq-res.bad  { color: var(–dim); }
+
+/* 요약 */
+.summary {
+font-family: ‘IBM Plex Mono’, monospace;
+font-size: 11px;
+color: var(–dim);
+line-height: 1.9;
+border-top: 1px solid var(–border);
+padding-top: 18px;
+}
+.summary em { color: var(–text); font-style: normal; font-weight: 500; }
+
+/* 하단 */
+.footnote {
+margin-top: 56px;
+padding-top: 18px;
+border-top: 1px solid var(–border);
+font-family: ‘IBM Plex Mono’, monospace;
+font-size: 10px;
+color: var(–dim);
+line-height: 2;
+}
+</style>
+
+</head>
+<body>
+<div class="container">
+  <h1>FERMAT PRIMALITY TEST</h1>
+
+  <div class="input-group">
+    <input type="text" id="numInput" placeholder="판별할 수 입력" autocomplete="off" spellcheck="false">
+    <button id="runBtn" onclick="runTest()">RUN</button>
+  </div>
+
+  <div class="rounds-row">
+    <span class="rounds-label">ROUNDS</span>
+    <input type="range" id="rounds" min="1" max="20" value="10"
+      oninput="document.getElementById('rv').textContent=this.value">
+    <span class="rounds-val" id="rv">10</span>
+  </div>
+
+  <hr>
+
+  <div id="result"></div>
+
+  <div class="footnote">
+    페르마 소정리 &mdash; 소수 p와 서로소인 a: &nbsp; a^(p&minus;1) &equiv; 1 (mod p)<br>
+    확률적 판별. 카마이클 수(561, 1105, 1729 &hellip;)에 대해 위양성 가능.
+  </div>
+</div>
+
+<script>
+function modpow(base, exp, mod) {
+  if (mod === 1n) return 0n;
+  let result = 1n;
+  base = base % mod;
+  while (exp > 0n) {
+    if (exp & 1n) result = result * base % mod;
+    exp >>= 1n;
+    base = base * base % mod;
+  }
+  return result;
+}
+
+function randomBase(n) {
+  if (n <= 3n) return 2n;
+  const bits = (n - 2n).toString(2).length;
+  let r;
+  do {
+    let s = '';
+    for (let i = 0; i < bits; i++) s += Math.random() < 0.5 ? '0' : '1';
+    r = BigInt('0b' + s);
+  } while (r < 2n || r >= n);
+  return r;
+}
+
+function fermatTest(n, rounds) {
+  const steps = [];
+  if (n < 2n)        return { verdict: 'composite', steps, quick: n + ' < 2' };
+  if (n === 2n)      return { verdict: 'prime',     steps, quick: '2는 소수' };
+  if (n % 2n === 0n) return { verdict: 'composite', steps, quick: '짝수' };
+  if (n === 3n)      return { verdict: 'prime',     steps, quick: '3은 소수' };
+
+  for (let i = 0; i < rounds; i++) {
+    const a = randomBase(n);
+    const r = modpow(a, n - 1n, n);
+    const pass = r === 1n;
+    steps.push({ a, r, pass });
+    if (!pass) return { verdict: 'composite', steps };
+  }
+  return { verdict: 'prime', steps };
+}
+
+function trunc(s, head = 7, tail = 4) {
+  return s.length > head + tail + 1 ? s.slice(0, head) + '…' + s.slice(-tail) : s;
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function runTest() {
+  const raw = document.getElementById('numInput').value.trim();
+  const rounds = parseInt(document.getElementById('rounds').value);
+  if (!raw) return;
+
+  if (!/^\d+$/.test(raw)) { showError('양의 정수를 입력하세요'); return; }
+
+  let n;
+  try { n = BigInt(raw); } catch(e) { showError('수가 너무 큽니다'); return; }
+
+  const btn = document.getElementById('runBtn');
+  btn.disabled = true;
+  btn.textContent = '…';
+
+  const { verdict, steps, quick } = fermatTest(n, rounds);
+  const isPrime = verdict === 'prime';
+  const dispN = trunc(raw, 12, 5);
+  const DELAY = steps.length > 0 ? Math.min(220, 1600 / steps.length) : 0;
+
+  // 초기 HTML 조립
+  let cellsHTML = steps.map((_, i) =>
+    `<div class="rcell" id="c${i}"><span id="cs${i}">${i+1}</span><div class="tip" id="ct${i}"></div></div>`
+  ).join('');
+
+  let eqHTML = steps.map((_, i) =>
+    `<div class="eq-row" id="eq${i}">
+      <span class="eq-idx">${i+1}</span>
+      <span class="eq-body">a=<span class="aval" id="av${i}">?</span> &nbsp; a^(n-1) mod n = <span id="rv${i}">?</span></span>
+      <span class="eq-res" id="er${i}"></span>
+    </div>`
+  ).join('');
+
+  const res = document.getElementById('result');
+  res.className = 'visible';
+  res.innerHTML = `
+    <div class="verdict-line">
+      <div class="verdict-n" id="vn">${dispN}</div>
+      <div class="verdict-badge" id="vb">판별 중</div>
+    </div>
+    ${steps.length ? `
+    <div class="section-label">Round Progress</div>
+    <div class="rounds-grid">${cellsHTML}</div>
+    <div class="section-label">Equations</div>
+    <div class="eq-log">${eqHTML}</div>
+    ` : ''}
+    <div class="summary" id="summary"></div>
+  `;
+
+  // 셀별 애니메이션
+  for (let i = 0; i < steps.length; i++) {
+    const cell = document.getElementById(`c${i}`);
+    cell.classList.add('testing');
+    await sleep(DELAY);
+    cell.classList.remove('testing');
+
+    const { a, r, pass } = steps[i];
+    cell.classList.add(pass ? 'pass' : 'fail');
+    document.getElementById(`cs${i}`).textContent = pass ? '✓' : '✗';
+
+    const aStr = a.toString(), rStr = r.toString();
+    document.getElementById(`ct${i}`).innerHTML = `a = ${trunc(aStr)}<br>→ ${trunc(rStr)}`;
+
+    document.getElementById(`av${i}`).textContent = trunc(aStr);
+    document.getElementById(`rv${i}`).textContent = trunc(rStr);
+    const er = document.getElementById(`er${i}`);
+    er.textContent = pass ? '≡ 1 ✓' : `≡ ${trunc(rStr)} ✗`;
+    er.className = 'eq-res ' + (pass ? 'ok' : 'bad');
+    document.getElementById(`eq${i}`).classList.add('show');
+
+    if (!pass) break;
+  }
+
+  await sleep(80);
+
+  // 최종 뱃지
+  const vb = document.getElementById('vb');
+  vb.textContent = isPrime ? 'PRIME' : 'COMPOSITE';
+  vb.className = 'verdict-badge ' + verdict;
+
+  // 요약
+  const sumEl = document.getElementById('summary');
+  if (quick) {
+    sumEl.innerHTML = `<em>${raw}</em> — ${quick}`;
+  } else if (isPrime) {
+    const t = steps.length;
+    sumEl.innerHTML = `<em>${t}</em>회 테스트 모두 통과. 아마도 소수입니다.`;
+  } else {
+    const p = steps.filter(s => s.pass).length;
+    sumEl.innerHTML = `<em>${p}</em>회 통과 후 실패. 확실한 합성수입니다.`;
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'RUN';
+}
+
+function showError(msg) {
+  const res = document.getElementById('result');
+  res.className = 'visible';
+  res.innerHTML = `<div class="verdict-badge error">${msg}</div>`;
+  const btn = document.getElementById('runBtn');
+  btn.disabled = false;
+  btn.textContent = 'RUN';
+}
+
+document.getElementById('numInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') runTest();
+});
+</script>
+
+</body>
+</html>
