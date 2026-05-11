@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -10,306 +9,316 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-–bg: #ffffff;
-–text: #111111;
-–dim: #888888;
-–border: #dddddd;
+  --bg: #ffffff;
+  --text: #111111;
+  --dim: #888888;
+  --faint: #cccccc;
+  --border: #dddddd;
 }
 
 body {
-background: var(–bg);
-color: var(–text);
-font-family: ‘IBM Plex Sans KR’, sans-serif;
-min-height: 100vh;
-display: flex;
-justify-content: center;
-padding: 60px 20px 80px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Sans KR', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 60px 20px 80px;
 }
 
-.container { width: 100%; max-width: 560px; }
+.container { width: 100%; max-width: 600px; }
 
 h1 {
-font-family: ‘IBM Plex Mono’, monospace;
-font-size: 12px;
-font-weight: 500;
-letter-spacing: 0.1em;
-color: var(–dim);
-margin-bottom: 36px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--dim);
+  margin-bottom: 36px;
 }
 
 /* 입력 */
 .input-group {
-display: flex;
-border: 1.5px solid var(–text);
-margin-bottom: 14px;
+  display: flex;
+  border: 1.5px solid var(--text);
+  margin-bottom: 14px;
 }
 
-input[type=“text”] {
-flex: 1;
-border: none;
-outline: none;
-font-family: ‘IBM Plex Mono’, monospace;
-font-size: 22px;
-font-weight: 500;
-padding: 13px 16px;
-color: var(–text);
-background: transparent;
-min-width: 0;
+input[type="text"] {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 22px;
+  font-weight: 500;
+  padding: 13px 16px;
+  color: var(--text);
+  background: transparent;
+  min-width: 0;
 }
 
-input[type=“text”]::placeholder { color: #cccccc; }
+input[type="text"]::placeholder { color: var(--faint); }
 
-button#runBtn {
-font-family: ‘IBM Plex Mono’, monospace;
-font-size: 11px;
-font-weight: 600;
-letter-spacing: 0.1em;
-background: var(–text);
-color: var(–bg);
-border: none;
-padding: 0 22px;
-cursor: pointer;
-transition: opacity 0.15s;
-white-space: nowrap;
+button {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  background: var(--text);
+  color: var(--bg);
+  border: none;
+  padding: 0 22px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  white-space: nowrap;
 }
 
-button#runBtn:hover { opacity: 0.7; }
-button#runBtn:disabled { opacity: 0.4; cursor: default; }
+button:hover { opacity: 0.7; }
+button:disabled { opacity: 0.4; cursor: default; }
 
-.rounds-row {
-display: flex;
-align-items: center;
-gap: 14px;
-margin-bottom: 36px;
+/* 모드 선택 */
+.mode-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 36px;
 }
 
-.rounds-label {
-font-family: ‘IBM Plex Mono’, monospace;
-font-size: 10px;
-letter-spacing: 0.1em;
-color: var(–dim);
-white-space: nowrap;
+.mode-btn {
+  flex: 1;
+  background: var(--bg);
+  color: var(--dim);
+  border: 1.5px solid var(--border);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  padding: 10px 8px;
+  cursor: pointer;
+  transition: all 0.15s;
 }
 
-input[type=“range”] {
-flex: 1;
--webkit-appearance: none;
-height: 1px;
-background: #cccccc;
-outline: none;
-cursor: pointer;
+.mode-btn:hover { border-color: var(--text); color: var(--text); }
+
+.mode-btn.active {
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
 }
 
-input[type=“range”]::-webkit-slider-thumb {
--webkit-appearance: none;
-width: 12px;
-height: 12px;
-background: var(–text);
-border-radius: 50%;
-cursor: pointer;
-}
-
-.rounds-val {
-font-family: ‘IBM Plex Mono’, monospace;
-font-size: 12px;
-color: var(–text);
-min-width: 20px;
-text-align: right;
-}
-
-hr { border: none; border-top: 1px solid var(–border); margin-bottom: 32px; }
+hr { border: none; border-top: 1px solid var(--border); margin-bottom: 32px; }
 
 /* 결과 */
 #result { display: none; }
 #result.visible { display: block; }
 
 .verdict-line {
-display: flex;
-align-items: center;
-gap: 14px;
-margin-bottom: 32px;
-flex-wrap: wrap;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
 }
 
 .verdict-n {
-font-family: ‘IBM Plex Mono’, monospace;
-font-size: 38px;
-font-weight: 600;
-letter-spacing: -0.02em;
-word-break: break-all;
-line-height: 1.1;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  word-break: break-all;
+  line-height: 1.1;
 }
 
 .verdict-badge {
-font-family: ‘IBM Plex Mono’, monospace;
-font-size: 11px;
-font-weight: 600;
-letter-spacing: 0.1em;
-padding: 4px 9px;
-border: 1.5px solid var(–text);
-white-space: nowrap;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  padding: 5px 10px;
+  border: 1.5px solid var(--text);
+  white-space: nowrap;
 }
 
-.verdict-badge.prime     { background: var(–text); color: var(–bg); }
-.verdict-badge.composite { background: var(–bg);   color: var(–text); }
-.verdict-badge.error     { border-color: var(–dim); color: var(–dim); }
+.verdict-badge.prime      { background: var(--text); color: var(--bg); }
+.verdict-badge.composite  { background: var(--bg);   color: var(--text); }
+.verdict-badge.testing    { border-color: var(--dim); color: var(--dim); }
+.verdict-badge.error      { border-color: var(--dim); color: var(--dim); }
 
-/* 라운드 그리드 */
-.section-label {
-font-family: ‘IBM Plex Mono’, monospace;
-font-size: 10px;
-letter-spacing: 0.1em;
-color: var(–dim);
-text-transform: uppercase;
-margin-bottom: 10px;
+/* 통계 그리드 */
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin-bottom: 24px;
 }
 
-.rounds-grid {
-display: flex;
-flex-wrap: wrap;
-gap: 5px;
-margin-bottom: 28px;
+.stat {
+  background: var(--bg);
+  padding: 14px 16px;
 }
 
-.rcell {
-width: 34px;
-height: 34px;
-border: 1.5px solid var(–border);
-display: flex;
-align-items: center;
-justify-content: center;
-font-family: ‘IBM Plex Mono’, monospace;
-font-size: 10px;
-color: #cccccc;
-position: relative;
-cursor: default;
-background: var(–bg);
-transition: background 0.15s, border-color 0.15s, color 0.15s;
+.stat-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--dim);
+  text-transform: uppercase;
+  margin-bottom: 6px;
 }
 
-.rcell.testing {
-border-color: var(–text);
-color: var(–text);
-animation: blink 0.45s infinite;
+.stat-val {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text);
+  word-break: break-all;
 }
 
-@keyframes blink {
-0%,100% { opacity: 1; }
-50%      { opacity: 0.3; }
+.stat-val.small { font-size: 13px; }
+
+/* 진행 바 */
+.progress-wrap {
+  margin-bottom: 24px;
 }
 
-.rcell.pass {
-background: var(–text);
-border-color: var(–text);
-color: var(–bg);
-animation: pop 0.18s ease;
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--dim);
+  margin-bottom: 8px;
 }
 
-.rcell.fail {
-background: var(–bg);
-border-color: var(–text);
-color: var(–text);
-animation: pop 0.18s ease;
+.progress-bar {
+  height: 3px;
+  background: var(--border);
+  position: relative;
+  overflow: hidden;
 }
 
-@keyframes pop {
-0%   { transform: scale(0.75); }
-65%  { transform: scale(1.1); }
-100% { transform: scale(1); }
+.progress-fill {
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  background: var(--text);
+  width: 0%;
+  transition: width 0.1s linear;
 }
 
-/* 툴팁 */
-.rcell:hover .tip { display: block; }
-.tip {
-display: none;
-position: absolute;
-bottom: calc(100% + 7px);
-left: 50%;
-transform: translateX(-50%);
-background: var(–text);
-color: var(–bg);
-font-family: ‘IBM Plex Mono’, monospace;
-font-size: 9px;
-white-space: nowrap;
-padding: 4px 7px;
-z-index: 10;
-pointer-events: none;
-line-height: 1.5;
-}
-.tip::after {
-content: ‘’;
-position: absolute;
-top: 100%; left: 50%;
-transform: translateX(-50%);
-border: 4px solid transparent;
-border-top-color: var(–text);
+/* 현재 테스트 중 base */
+.current-test {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--dim);
+  padding: 10px 14px;
+  border: 1px dashed var(--border);
+  margin-bottom: 24px;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  word-break: break-all;
 }
 
-/* 수식 로그 */
-.eq-log { margin-bottom: 28px; }
-
-.eq-row {
-display: grid;
-grid-template-columns: 20px 1fr auto;
-align-items: center;
-gap: 10px;
-padding: 7px 0;
-border-bottom: 1px solid var(–border);
-font-family: ‘IBM Plex Mono’, monospace;
-font-size: 11px;
-opacity: 0;
-transform: translateY(3px);
-transition: opacity 0.18s, transform 0.18s;
+.current-test .cval {
+  color: var(--text);
+  margin-left: 6px;
 }
 
-.eq-row.show { opacity: 1; transform: translateY(0); }
+.current-test .pulse {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--text);
+  border-radius: 50%;
+  margin-right: 10px;
+  animation: pulse 0.8s infinite;
+  flex-shrink: 0;
+}
 
-.eq-idx  { color: var(–dim); font-size: 10px; }
-.eq-body { color: var(–text); }
-.eq-body .aval { color: var(–dim); }
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.2; }
+}
 
-.eq-res      { font-weight: 600; }
-.eq-res.ok   { color: var(–text); }
-.eq-res.bad  { color: var(–dim); }
+/* 실패 정보 */
+.witness {
+  background: var(--text);
+  color: var(--bg);
+  padding: 16px;
+  margin-bottom: 24px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.witness .wlabel {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  opacity: 0.6;
+  margin-bottom: 6px;
+}
+
+.witness .weq {
+  font-size: 13px;
+  word-break: break-all;
+}
 
 /* 요약 */
 .summary {
-font-family: ‘IBM Plex Mono’, monospace;
-font-size: 11px;
-color: var(–dim);
-line-height: 1.9;
-border-top: 1px solid var(–border);
-padding-top: 18px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--dim);
+  line-height: 1.9;
+  border-top: 1px solid var(--border);
+  padding-top: 18px;
 }
-.summary em { color: var(–text); font-style: normal; font-weight: 500; }
+.summary em { color: var(--text); font-style: normal; font-weight: 500; }
+
+/* 컨트롤 */
+.control-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.control-row button.secondary {
+  background: var(--bg);
+  color: var(--text);
+  border: 1.5px solid var(--text);
+  flex: 1;
+  padding: 9px;
+}
 
 /* 하단 */
 .footnote {
-margin-top: 56px;
-padding-top: 18px;
-border-top: 1px solid var(–border);
-font-family: ‘IBM Plex Mono’, monospace;
-font-size: 10px;
-color: var(–dim);
-line-height: 2;
+  margin-top: 56px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--dim);
+  line-height: 2;
 }
 </style>
-
 </head>
 <body>
 <div class="container">
-  <h1>FERMAT PRIMALITY TEST</h1>
+  <h1>FERMAT PRIMALITY TEST &middot; SEQUENTIAL</h1>
 
   <div class="input-group">
     <input type="text" id="numInput" placeholder="판별할 수 입력" autocomplete="off" spellcheck="false">
     <button id="runBtn" onclick="runTest()">RUN</button>
   </div>
 
-  <div class="rounds-row">
-    <span class="rounds-label">ROUNDS</span>
-    <input type="range" id="rounds" min="1" max="20" value="10"
-      oninput="document.getElementById('rv').textContent=this.value">
-    <span class="rounds-val" id="rv">10</span>
+  <div class="mode-row">
+    <button class="mode-btn" data-mode="5">5s</button>
+    <button class="mode-btn active" data-mode="15">15s</button>
+    <button class="mode-btn" data-mode="30">30s</button>
+    <button class="mode-btn" data-mode="60">60s</button>
+    <button class="mode-btn" data-mode="exhaustive">EXHAUSTIVE</button>
   </div>
 
   <hr>
@@ -318,11 +327,27 @@ line-height: 2;
 
   <div class="footnote">
     페르마 소정리 &mdash; 소수 p와 서로소인 a: &nbsp; a^(p&minus;1) &equiv; 1 (mod p)<br>
-    확률적 판별. 카마이클 수(561, 1105, 1729 &hellip;)에 대해 위양성 가능.
+    base = 2, 3, 4, &hellip; 순차 검사. 시간 예산 내 최대한 많은 a 확인.<br>
+    카마이클 수(561, 1105, 1729 &hellip;)는 페르마 한계로 위양성 가능.
   </div>
 </div>
 
 <script>
+// ===== 상태 =====
+let selectedMode = '15';
+let running = false;
+let abortFlag = false;
+
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (running) return;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedMode = btn.dataset.mode;
+  });
+});
+
+// ===== 수학 =====
 function modpow(base, exp, mod) {
   if (mod === 1n) return 0n;
   let result = 1n;
@@ -335,149 +360,279 @@ function modpow(base, exp, mod) {
   return result;
 }
 
-function randomBase(n) {
-  if (n <= 3n) return 2n;
-  const bits = (n - 2n).toString(2).length;
-  let r;
-  do {
-    let s = '';
-    for (let i = 0; i < bits; i++) s += Math.random() < 0.5 ? '0' : '1';
-    r = BigInt('0b' + s);
-  } while (r < 2n || r >= n);
-  return r;
-}
-
-function fermatTest(n, rounds) {
-  const steps = [];
-  if (n < 2n)        return { verdict: 'composite', steps, quick: n + ' < 2' };
-  if (n === 2n)      return { verdict: 'prime',     steps, quick: '2는 소수' };
-  if (n % 2n === 0n) return { verdict: 'composite', steps, quick: '짝수' };
-  if (n === 3n)      return { verdict: 'prime',     steps, quick: '3은 소수' };
-
-  for (let i = 0; i < rounds; i++) {
-    const a = randomBase(n);
-    const r = modpow(a, n - 1n, n);
-    const pass = r === 1n;
-    steps.push({ a, r, pass });
-    if (!pass) return { verdict: 'composite', steps };
-  }
-  return { verdict: 'prime', steps };
-}
-
-function trunc(s, head = 7, tail = 4) {
+// ===== 유틸 =====
+function trunc(s, head = 10, tail = 5) {
+  if (typeof s !== 'string') s = s.toString();
   return s.length > head + tail + 1 ? s.slice(0, head) + '…' + s.slice(-tail) : s;
+}
+
+function fmtNum(n) {
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
+// ===== 메인 =====
 async function runTest() {
-  const raw = document.getElementById('numInput').value.trim();
-  const rounds = parseInt(document.getElementById('rounds').value);
-  if (!raw) return;
+  if (running) return;
 
+  const raw = document.getElementById('numInput').value.trim();
+  if (!raw) return;
   if (!/^\d+$/.test(raw)) { showError('양의 정수를 입력하세요'); return; }
 
   let n;
   try { n = BigInt(raw); } catch(e) { showError('수가 너무 큽니다'); return; }
 
+  // 극단 케이스
+  if (n < 2n)        { showQuick(raw, 'composite', n + ' < 2'); return; }
+  if (n === 2n)      { showQuick(raw, 'prime', '2는 소수'); return; }
+  if (n === 3n)      { showQuick(raw, 'prime', '3은 소수'); return; }
+  if (n % 2n === 0n) { showQuick(raw, 'composite', '짝수'); return; }
+
+  running = true;
+  abortFlag = false;
   const btn = document.getElementById('runBtn');
   btn.disabled = true;
   btn.textContent = '…';
 
-  const { verdict, steps, quick } = fermatTest(n, rounds);
-  const isPrime = verdict === 'prime';
-  const dispN = trunc(raw, 12, 5);
-  const DELAY = steps.length > 0 ? Math.min(220, 1600 / steps.length) : 0;
+  // UI 초기화
+  setupResultUI(raw, n);
 
-  // 초기 HTML 조립
-  let cellsHTML = steps.map((_, i) =>
-    `<div class="rcell" id="c${i}"><span id="cs${i}">${i+1}</span><div class="tip" id="ct${i}"></div></div>`
-  ).join('');
+  // 시간 예산
+  const exhaustive = selectedMode === 'exhaustive';
+  const budgetMs = exhaustive ? Infinity : parseInt(selectedMode) * 1000;
+  const startTime = performance.now();
+  const maxBase = n - 1n; // a는 2..n-1
 
-  let eqHTML = steps.map((_, i) =>
-    `<div class="eq-row" id="eq${i}">
-      <span class="eq-idx">${i+1}</span>
-      <span class="eq-body">a=<span class="aval" id="av${i}">?</span> &nbsp; a^(n-1) mod n = <span id="rv${i}">?</span></span>
-      <span class="eq-res" id="er${i}"></span>
-    </div>`
-  ).join('');
+  let tested = 0n;
+  let passed = 0n;
+  let a = 2n;
+  let witnessFound = null;
 
+  // UI 갱신 주기 제어
+  let lastUiUpdate = 0;
+  const UI_INTERVAL = 80; // ms
+  let lastYield = performance.now();
+
+  while (a < n) {
+    if (abortFlag) break;
+
+    const now = performance.now();
+    const elapsed = now - startTime;
+
+    if (!exhaustive && elapsed >= budgetMs) break;
+
+    // 페르마 한 라운드
+    const r = modpow(a, n - 1n, n);
+    tested++;
+
+    if (r === 1n) {
+      passed++;
+    } else {
+      witnessFound = { a, r };
+      break;
+    }
+
+    a++;
+
+    // UI 업데이트 (주기적)
+    if (now - lastUiUpdate > UI_INTERVAL) {
+      updateProgress(tested, passed, a, elapsed, budgetMs, maxBase, exhaustive);
+      lastUiUpdate = now;
+    }
+
+    // 이벤트 루프에 양보 (UI 응답성)
+    if (now - lastYield > 40) {
+      await sleep(0);
+      lastYield = performance.now();
+    }
+  }
+
+  const totalElapsed = performance.now() - startTime;
+
+  // 최종 결과
+  finalize(raw, n, tested, passed, witnessFound, totalElapsed, exhaustive, a);
+
+  running = false;
+  btn.disabled = false;
+  btn.textContent = 'RUN';
+}
+
+function setupResultUI(raw, n) {
+  const dispN = trunc(raw, 18, 6);
   const res = document.getElementById('result');
   res.className = 'visible';
   res.innerHTML = `
     <div class="verdict-line">
-      <div class="verdict-n" id="vn">${dispN}</div>
-      <div class="verdict-badge" id="vb">판별 중</div>
+      <div class="verdict-n">${dispN}</div>
+      <div class="verdict-badge testing" id="vb">TESTING</div>
     </div>
-    ${steps.length ? `
-    <div class="section-label">Round Progress</div>
-    <div class="rounds-grid">${cellsHTML}</div>
-    <div class="section-label">Equations</div>
-    <div class="eq-log">${eqHTML}</div>
-    ` : ''}
+
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="plLeft">진행 중</span>
+        <span id="plRight">0%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="pfill"></div></div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat">
+        <div class="stat-label">Bases tested</div>
+        <div class="stat-val" id="sTested">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Passed</div>
+        <div class="stat-val" id="sPassed">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Elapsed</div>
+        <div class="stat-val" id="sElapsed">0.0s</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Speed</div>
+        <div class="stat-val" id="sSpeed">— /s</div>
+      </div>
+    </div>
+
+    <div class="current-test" id="cur">
+      <span class="pulse"></span>
+      <span>준비 중&hellip;</span>
+    </div>
+
+    <div class="control-row">
+      <button class="secondary" onclick="stopTest()">STOP</button>
+    </div>
+
     <div class="summary" id="summary"></div>
   `;
+}
 
-  // 셀별 애니메이션
-  for (let i = 0; i < steps.length; i++) {
-    const cell = document.getElementById(`c${i}`);
-    cell.classList.add('testing');
-    await sleep(DELAY);
-    cell.classList.remove('testing');
+function updateProgress(tested, passed, currentA, elapsed, budgetMs, maxBase, exhaustive) {
+  document.getElementById('sTested').textContent = fmtNum(tested);
+  document.getElementById('sPassed').textContent = fmtNum(passed);
+  document.getElementById('sElapsed').textContent = (elapsed / 1000).toFixed(1) + 's';
 
-    const { a, r, pass } = steps[i];
-    cell.classList.add(pass ? 'pass' : 'fail');
-    document.getElementById(`cs${i}`).textContent = pass ? '✓' : '✗';
+  const speed = elapsed > 0 ? Number(tested) / (elapsed / 1000) : 0;
+  document.getElementById('sSpeed').textContent = fmtNum(Math.round(speed)) + ' /s';
 
-    const aStr = a.toString(), rStr = r.toString();
-    document.getElementById(`ct${i}`).innerHTML = `a = ${trunc(aStr)}<br>→ ${trunc(rStr)}`;
-
-    document.getElementById(`av${i}`).textContent = trunc(aStr);
-    document.getElementById(`rv${i}`).textContent = trunc(rStr);
-    const er = document.getElementById(`er${i}`);
-    er.textContent = pass ? '≡ 1 ✓' : `≡ ${trunc(rStr)} ✗`;
-    er.className = 'eq-res ' + (pass ? 'ok' : 'bad');
-    document.getElementById(`eq${i}`).classList.add('show');
-
-    if (!pass) break;
-  }
-
-  await sleep(80);
-
-  // 최종 뱃지
-  const vb = document.getElementById('vb');
-  vb.textContent = isPrime ? 'PRIME' : 'COMPOSITE';
-  vb.className = 'verdict-badge ' + verdict;
-
-  // 요약
-  const sumEl = document.getElementById('summary');
-  if (quick) {
-    sumEl.innerHTML = `<em>${raw}</em> — ${quick}`;
-  } else if (isPrime) {
-    const t = steps.length;
-    sumEl.innerHTML = `<em>${t}</em>회 테스트 모두 통과. 아마도 소수입니다.`;
+  // 진행률
+  let pct, leftLabel;
+  if (exhaustive) {
+    // 전수 모드: a / (n-1) 비율
+    const total = maxBase - 1n; // 2..n-1
+    const ratio = total > 0n ? Number(tested * 10000n / total) / 100 : 0;
+    pct = Math.min(ratio, 99.99);
+    leftLabel = `a = ${trunc(currentA.toString(), 12, 4)} / ${trunc(maxBase.toString(), 12, 4)}`;
   } else {
-    const p = steps.filter(s => s.pass).length;
-    sumEl.innerHTML = `<em>${p}</em>회 통과 후 실패. 확실한 합성수입니다.`;
+    pct = Math.min((elapsed / budgetMs) * 100, 100);
+    leftLabel = `a = ${trunc(currentA.toString(), 14, 4)}`;
+  }
+  document.getElementById('pfill').style.width = pct.toFixed(2) + '%';
+  document.getElementById('plRight').textContent = pct.toFixed(1) + '%';
+  document.getElementById('plLeft').textContent = leftLabel;
+
+  // 현재 테스트 중
+  document.getElementById('cur').innerHTML = `
+    <span class="pulse"></span>
+    <span>현재 base: <span class="cval">a = ${trunc(currentA.toString(), 16, 5)}</span></span>
+  `;
+}
+
+function finalize(raw, n, tested, passed, witness, elapsed, exhaustive, currentA) {
+  const vb = document.getElementById('vb');
+  const cur = document.getElementById('cur');
+  const sumEl = document.getElementById('summary');
+  const ctrl = document.querySelector('.control-row');
+
+  // 최종 stats 한번 더 갱신
+  document.getElementById('sTested').textContent = fmtNum(tested);
+  document.getElementById('sPassed').textContent = fmtNum(passed);
+  document.getElementById('sElapsed').textContent = (elapsed / 1000).toFixed(2) + 's';
+  const speed = elapsed > 0 ? Number(tested) / (elapsed / 1000) : 0;
+  document.getElementById('sSpeed').textContent = fmtNum(Math.round(speed)) + ' /s';
+
+  if (witness) {
+    // COMPOSITE
+    vb.textContent = 'COMPOSITE';
+    vb.className = 'verdict-badge composite';
+
+    document.getElementById('pfill').style.width = '100%';
+    document.getElementById('plRight').textContent = '실패';
+    document.getElementById('plLeft').textContent = 'witness 발견';
+
+    let witnessHTML = `
+        <div class="wlabel">WITNESS &middot; FERMAT</div>
+        <div class="weq">a = ${trunc(witness.a.toString())}</div>
+        <div class="weq">a^(n−1) mod n = ${trunc(witness.r.toString(), 20, 8)}</div>
+        <div class="weq" style="margin-top:6px; opacity:0.7;">≠ 1 → 합성수 확정</div>
+      `;
+    cur.outerHTML = `<div class="witness">${witnessHTML}</div>`;
+
+    sumEl.innerHTML = `<em>${fmtNum(passed)}</em>개 base 통과 후 <em>a = ${trunc(witness.a.toString())}</em>에서 실패. 확실한 합성수.`;
+  } else if (exhaustive && currentA >= n) {
+    // 전수 완료 → 결정론적 PRIME
+    vb.textContent = 'PRIME (DETERMINISTIC)';
+    vb.className = 'verdict-badge prime';
+
+    document.getElementById('pfill').style.width = '100%';
+    document.getElementById('plRight').textContent = '100%';
+    document.getElementById('plLeft').textContent = '전수 검사 완료';
+
+    cur.innerHTML = `<span style="color:var(--text);">✓ 2 ≤ a ≤ n−1 모든 base 통과</span>`;
+    sumEl.innerHTML = `모든 <em>${fmtNum(tested)}</em>개 base가 페르마 조건을 만족. <em>결정론적 소수</em> (페르마 기준).`;
+  } else {
+    // 시간 예산 종료 또는 중단 → probable prime
+    vb.textContent = abortFlag ? 'STOPPED' : 'PROBABLE PRIME';
+    vb.className = abortFlag ? 'verdict-badge testing' : 'verdict-badge prime';
+
+    document.getElementById('pfill').style.width = '100%';
+    document.getElementById('plRight').textContent = '완료';
+    document.getElementById('plLeft').textContent = abortFlag ? '중단됨' : '시간 예산 종료';
+
+    cur.innerHTML = `<span style="color:var(--text);">✓ a = 2 &hellip; ${trunc((currentA - 1n).toString(), 14, 4)} 전부 통과</span>`;
+
+    if (abortFlag) {
+      sumEl.innerHTML = `사용자 중단. <em>${fmtNum(passed)}</em>개 base 통과.`;
+    } else {
+      // 카마이클 경고 조건: 작은 수에서 너무 빨리 통과한 경우 슬쩍 언급
+      const carmichaelHint = n < 100000n
+        ? ' <span style="opacity:0.7;">(작은 수: 카마이클 수 가능성도 고려)</span>'
+        : '';
+      sumEl.innerHTML = `<em>${fmtNum(elapsed/1000)}</em>초간 <em>${fmtNum(passed)}</em>개 base (a=2부터 ${trunc((currentA - 1n).toString())}까지) 모두 통과. <em>아마도 소수</em>.${carmichaelHint}`;
+    }
   }
 
-  btn.disabled = false;
-  btn.textContent = 'RUN';
+  // STOP 버튼 → RESET으로
+  if (ctrl) ctrl.remove();
+}
+
+function stopTest() {
+  if (running) abortFlag = true;
+}
+
+function showQuick(raw, verdict, reason) {
+  const dispN = trunc(raw, 18, 6);
+  const res = document.getElementById('result');
+  res.className = 'visible';
+  res.innerHTML = `
+    <div class="verdict-line">
+      <div class="verdict-n">${dispN}</div>
+      <div class="verdict-badge ${verdict}">${verdict === 'prime' ? 'PRIME' : 'COMPOSITE'}</div>
+    </div>
+    <div class="summary"><em>${raw}</em> — ${reason}</div>
+  `;
 }
 
 function showError(msg) {
   const res = document.getElementById('result');
   res.className = 'visible';
   res.innerHTML = `<div class="verdict-badge error">${msg}</div>`;
-  const btn = document.getElementById('runBtn');
-  btn.disabled = false;
-  btn.textContent = 'RUN';
 }
 
 document.getElementById('numInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') runTest();
 });
 </script>
-
 </body>
 </html>
