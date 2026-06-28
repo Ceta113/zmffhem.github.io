@@ -135,7 +135,7 @@ canvas { display:block; width:100%; height:100%; background:#06070d; }
       // weapon stats
       damage:11, fireRate:1.7, projectiles:1, pierce:0, bulletSpeed:430, bulletR:6, bulletLife:0.85,
       crit:0.05, knock:60,
-      pickup:80, regen:0,
+      pickup:155, regen:0,
       orbCount:0, orbDamage:9, orbRadius:62, orbSpeed:2.6, orbSize:11,
       iframe:0, magnetAll:false
     };
@@ -201,14 +201,14 @@ canvas { display:block; width:100%; height:100%; background:#06070d; }
   // ---- spawning ----
   function spawnEnemy(){
     const ang=Math.random()*Math.PI*2;
-    const rad=Math.max(W,H)*0.62+rand(20,120);
+    const rad=Math.max(W,H)*0.52+rand(10,70);
     const x=P.x+Math.cos(ang)*rad, y=P.y+Math.sin(ang)*rad;
     const t=time;
     let type='basic',r=13,hpm=1,spd=58,col='#ff5b7a',dmg=8;
     const roll=Math.random();
     if(t>25 && roll<0.18){ type='fast'; r=9; hpm=0.55; spd=104; col='#ffd84d'; dmg=6; }
     else if(t>45 && roll<0.30){ type='tank'; r=22; hpm=4.2; spd=40; col='#a06bff'; dmg=16; }
-    const baseHp=16+t*1.7;
+    const baseHp=12+t*1.5;
     enemies.push({x,y,r,type,hp:baseHp*hpm,maxHp:baseHp*hpm,speed:Math.min(spd+t*0.5,150),col,dmg,hit:0});
   }
 
@@ -306,8 +306,8 @@ canvas { display:block; width:100%; height:100%; background:#06070d; }
 
     // spawn
     spawnT-=dt;
-    const interval=Math.max(0.16,1.15-time*0.012);
-    if(spawnT<=0 && enemies.length<240){ spawnT=interval; const burst=1+Math.floor(time/55); for(let i=0;i<burst;i++)spawnEnemy(); }
+    const interval=Math.max(0.12,0.6-time*0.008);
+    if(spawnT<=0 && enemies.length<240){ spawnT=interval; const burst=1+Math.floor(time/30); for(let i=0;i<burst;i++)spawnEnemy(); }
 
     // fire
     fireT-=dt; const fi=1/P.fireRate;
@@ -403,7 +403,7 @@ canvas { display:block; width:100%; height:100%; background:#06070d; }
         ctx.fillRect(p.x+ox-p.r/2,p.y+oy-p.r/2,p.r,p.r);} ctx.globalAlpha=1;
       // player
       if(state!==S.OVER){const x=P.x+ox,y=P.y+oy;
-        if(P.pickup>80){ctx.strokeStyle='rgba(0,229,255,.12)';ctx.beginPath();ctx.arc(x,y,P.pickup,0,7);ctx.stroke();}
+        {ctx.strokeStyle='rgba(0,229,255,.10)';ctx.beginPath();ctx.arc(x,y,P.pickup,0,7);ctx.stroke();}
         const blink=P.iframe>0 && Math.floor(time*20)%2===0;
         ctx.globalAlpha=blink?0.4:1;
         const g=ctx.createLinearGradient(x-P.r,y,x+P.r,y); g.addColorStop(0,'#00e5ff');g.addColorStop(1,'#7a5cff');
@@ -438,6 +438,8 @@ canvas { display:block; width:100%; height:100%; background:#06070d; }
   const menu=document.getElementById('menu'), over=document.getElementById('over'), levelup=document.getElementById('levelup');
   document.getElementById('startBtn').onclick=start; document.getElementById('retryBtn').onclick=start;
   document.getElementById('bestmini').textContent='BEST '+fmt(best);
+
+  reset(); // initialize arrays/state so the loop is safe before START
 
   let last=performance.now();
   function loop(now){ let dt=(now-last)/1000; last=now; if(dt>0.05)dt=0.05; update(dt); draw(); requestAnimationFrame(loop); }
