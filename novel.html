@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b0a10">
+<title>잿빛 왕관 — 몰락 군주의 아카데미 생존기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Gowun+Batang:wght@400;700&family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0a10; --bg2:#12111b; --ink:#e8e3d6; --ink-dim:#9a94a6;
+  --gold:#d8b25c; --gold-dim:#8a7440; --blood:#a3313f; --line:rgba(216,178,92,.18);
+  --paper:#efe7d4; --paper-ink:#221d16; --paper-dim:#6a5f4d;
+  --font-body:'Nanum Myeongjo','Gowun Batang',serif;
+  --font-disp:'Cinzel','Nanum Myeongjo',serif;
+  --fs:19px; --lh:2.05; --maxw:720px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:var(--font-body); background:var(--bg); color:var(--ink);
+  line-height:var(--lh); font-size:var(--fs);
+  background-image:
+    radial-gradient(1200px 600px at 50% -10%, rgba(216,178,92,.06), transparent 60%),
+    radial-gradient(900px 500px at 80% 110%, rgba(163,49,63,.07), transparent 60%);
+  min-height:100vh; transition:background .4s,color .4s;
+}
+body.paper{ --bg:#efe7d4; --bg2:#e7dcc2; --ink:#221d16; --ink-dim:#6a5f4d; --line:rgba(120,90,40,.22);
+  background-image:radial-gradient(1000px 500px at 50% -10%, rgba(120,90,40,.05), transparent 60%);}
+img{max-width:100%;display:block;}
+
+/* progress */
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--gold),var(--blood));z-index:60;box-shadow:0 0 12px rgba(216,178,92,.6);transition:width .1s linear;}
+
+/* top bar */
+#topbar{position:fixed;top:0;left:0;right:0;height:52px;display:flex;align-items:center;
+  justify-content:space-between;padding:0 16px;z-index:50;
+  background:linear-gradient(180deg,rgba(11,10,16,.92),rgba(11,10,16,0));backdrop-filter:blur(6px);}
+body.paper #topbar{background:linear-gradient(180deg,rgba(239,231,212,.92),rgba(239,231,212,0));}
+#topbar .brand{font-family:var(--font-disp);letter-spacing:2px;font-size:14px;color:var(--gold);
+  text-shadow:0 1px 8px rgba(216,178,92,.3);cursor:pointer;}
+#topbar .tools{display:flex;gap:6px;}
+.tbtn{background:rgba(216,178,92,.08);border:1px solid var(--line);color:var(--ink);
+  width:38px;height:34px;border-radius:8px;font-size:15px;cursor:pointer;display:flex;
+  align-items:center;justify-content:center;transition:.2s;}
+.tbtn:hover{background:rgba(216,178,92,.18);border-color:var(--gold);}
+.tbtn:active{transform:scale(.94);}
+
+/* TOC drawer */
+#tocwrap{position:fixed;inset:0;z-index:70;pointer-events:none;}
+#tocbg{position:absolute;inset:0;background:rgba(0,0,0,.6);opacity:0;transition:.3s;}
+#toc{position:absolute;top:0;left:0;bottom:0;width:min(340px,84vw);background:var(--bg2);
+  border-right:1px solid var(--line);transform:translateX(-102%);transition:.34s cubic-bezier(.2,.7,.2,1);
+  overflow-y:auto;padding:24px 0 40px;box-shadow:12px 0 40px rgba(0,0,0,.5);}
+#tocwrap.open{pointer-events:auto;}
+#tocwrap.open #tocbg{opacity:1;}
+#tocwrap.open #toc{transform:translateX(0);}
+#toc h3{font-family:var(--font-disp);font-size:13px;letter-spacing:3px;color:var(--gold);
+  padding:0 24px 14px;border-bottom:1px solid var(--line);margin-bottom:8px;}
+.toc-item{padding:11px 24px;cursor:pointer;font-size:15px;color:var(--ink-dim);
+  border-left:2px solid transparent;transition:.16s;line-height:1.5;}
+.toc-item:hover{color:var(--ink);background:rgba(216,178,92,.06);}
+.toc-item.act{color:var(--gold);border-left-color:var(--gold);background:rgba(216,178,92,.08);}
+.toc-item .num{font-family:var(--font-disp);font-size:11px;opacity:.6;margin-right:8px;}
+.toc-item.part{color:var(--blood);font-weight:700;letter-spacing:1px;pointer-events:none;
+  border-top:1px solid var(--line);margin-top:6px;padding-top:16px;font-size:12px;}
+
+/* reader */
+#reader{max-width:var(--maxw);margin:0 auto;padding:92px 22px 140px;}
+.chapter{display:none;animation:fade .6s ease;}
+.chapter.show{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+
+.ch-head{text-align:center;margin:10px 0 54px;}
+.ch-kicker{font-family:var(--font-disp);letter-spacing:5px;font-size:12px;color:var(--gold-dim);}
+.ch-orn{color:var(--gold);font-size:20px;margin:14px 0 10px;letter-spacing:6px;}
+.ch-title{font-family:var(--font-body);font-weight:800;font-size:30px;line-height:1.35;
+  color:var(--ink);letter-spacing:.5px;}
+body.paper .ch-title{color:var(--paper-ink);}
+.ch-sub{margin-top:14px;color:var(--ink-dim);font-size:14px;letter-spacing:1px;font-style:italic;}
+
+.chapter p{margin:0 0 1.25em;text-align:justify;word-break:keep-all;text-indent:1em;}
+.chapter p.noind{text-indent:0;}
+.chapter .lead::first-letter{font-family:var(--font-disp);font-size:3.2em;float:left;line-height:.82;
+  padding:6px 10px 0 0;color:var(--gold);}
+.chapter .dlg{text-indent:0;padding-left:1.1em;}
+.chapter .shout{font-weight:800;color:var(--gold);letter-spacing:.5px;}
+.chapter .whisper{color:var(--ink-dim);font-style:italic;}
+.chapter em{color:var(--gold);font-style:italic;}
+.chapter .scene{text-align:center;color:var(--gold-dim);margin:2.2em 0;letter-spacing:8px;font-size:14px;}
+.chapter blockquote{border-left:2px solid var(--gold);margin:1.6em 0;padding:.4em 0 .4em 1.2em;
+  color:var(--ink-dim);font-style:italic;text-indent:0;}
+.chapter .place{display:inline-block;font-family:var(--font-disp);font-size:12px;letter-spacing:2px;
+  color:var(--gold);border:1px solid var(--line);border-radius:20px;padding:5px 16px;margin:0 auto 2em;}
+.place-wrap{text-align:center;}
+
+/* info window */
+.infowin{background:linear-gradient(180deg,rgba(216,178,92,.06),rgba(163,49,63,.04));
+  border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin:2.4em 0;
+  font-family:'Gowun Batang',serif;font-size:14px;line-height:1.85;text-indent:0;
+  box-shadow:inset 0 0 30px rgba(0,0,0,.2);}
+.infowin .iw-t{font-family:var(--font-disp);letter-spacing:3px;color:var(--gold);font-size:12px;
+  text-align:center;margin-bottom:10px;padding-bottom:8px;border-bottom:1px dashed var(--line);}
+.infowin .iw-row{display:flex;justify-content:space-between;gap:12px;padding:2px 0;}
+.infowin .iw-k{color:var(--ink-dim);}
+.infowin .iw-sec{color:var(--blood);font-weight:700;letter-spacing:1px;margin:8px 0 2px;font-size:12px;}
+
+/* char portrait block */
+.figure{margin:2.4em 0;text-align:center;}
+.figure .card{display:inline-block;border:1px solid var(--line);border-radius:14px;
+  padding:22px 26px;background:var(--bg2);min-width:200px;position:relative;overflow:hidden;}
+.figure .card::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(120px 120px at 50% 0%,rgba(216,178,92,.12),transparent);}
+.figure .sigil{font-size:40px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.5));}
+.figure .nm{font-family:var(--font-body);font-weight:800;font-size:19px;color:var(--gold);margin-top:8px;letter-spacing:1px;}
+.figure .rl{font-size:12px;color:var(--ink-dim);margin-top:4px;letter-spacing:1px;}
+
+/* nav */
+.chnav{display:flex;justify-content:space-between;gap:12px;margin-top:70px;
+  border-top:1px solid var(--line);padding-top:26px;}
+.chnav button{flex:1;background:var(--bg2);border:1px solid var(--line);color:var(--ink);
+  padding:16px 14px;border-radius:12px;cursor:pointer;font-family:var(--font-body);font-size:14px;
+  transition:.2s;text-align:left;}
+.chnav button:hover:not(:disabled){border-color:var(--gold);background:rgba(216,178,92,.08);}
+.chnav button:disabled{opacity:.3;cursor:default;}
+.chnav button .lbl{display:block;font-family:var(--font-disp);font-size:10px;letter-spacing:2px;color:var(--gold-dim);margin-bottom:4px;}
+.chnav button.next{text-align:right;}
+
+/* cover */
+#cover{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:40px 24px;position:relative;}
+#cover .crown{font-size:56px;filter:drop-shadow(0 6px 24px rgba(216,178,92,.4));animation:float 5s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+#cover .tt{font-family:var(--font-body);font-weight:800;font-size:clamp(44px,12vw,84px);
+  letter-spacing:6px;margin:18px 0 6px;color:var(--ink);
+  text-shadow:0 4px 30px rgba(216,178,92,.25);}
+#cover .tt .b{color:var(--blood);}
+#cover .sub{font-family:var(--font-disp);letter-spacing:4px;font-size:clamp(12px,3.4vw,16px);color:var(--gold);}
+#cover .desc{max-width:520px;margin:34px auto;color:var(--ink-dim);font-size:15px;line-height:1.9;}
+#cover .divider{width:60px;height:1px;background:var(--gold);margin:26px auto;opacity:.6;}
+#cover .enter{margin-top:20px;background:transparent;border:1px solid var(--gold);color:var(--gold);
+  font-family:var(--font-disp);letter-spacing:3px;font-size:13px;padding:15px 40px;border-radius:30px;
+  cursor:pointer;transition:.25s;}
+#cover .enter:hover{background:var(--gold);color:var(--bg);box-shadow:0 0 30px rgba(216,178,92,.5);}
+#cover .meta{position:absolute;bottom:26px;color:var(--ink-dim);font-size:12px;letter-spacing:2px;}
+#cover.hide{display:none;}
+
+/* misc */
+.center{text-align:center;}
+#gototop{position:fixed;right:16px;bottom:20px;z-index:40;width:44px;height:44px;border-radius:50%;
+  background:var(--bg2);border:1px solid var(--line);color:var(--gold);cursor:pointer;font-size:18px;
+  display:none;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,0,0,.4);}
+#gototop.show{display:flex;}
+::selection{background:rgba(216,178,92,.3);color:#fff;}
+@media(max-width:600px){:root{--fs:17px;--lh:1.95;}#reader{padding:80px 18px 120px;}.ch-title{font-size:25px;}}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<div id="topbar">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <button class="tbtn" id="menuBtn" title="목차">☰</button>
+    <span class="brand" id="brandHome">✦ 잿빛 왕관 ✦</span>
+  </div>
+  <div class="tools">
+    <button class="tbtn" id="fontDown" title="글자 작게">A−</button>
+    <button class="tbtn" id="fontUp" title="글자 크게">A+</button>
+    <button class="tbtn" id="themeBtn" title="테마">◐</button>
+  </div>
+</div>
+
+<div id="tocwrap">
+  <div id="tocbg"></div>
+  <nav id="toc"><h3>◆ 목 차 ◆</h3><div id="tocList"></div></nav>
+</div>
+
+<!-- COVER -->
+<section id="cover">
+  <div class="crown">♛</div>
+  <h1 class="tt">잿빛 <span class="b">왕관</span></h1>
+  <div class="sub">THE ASHEN CROWN</div>
+  <div class="divider"></div>
+  <p class="desc">천 년의 멘켄트 왕국은 하룻밤 만에 재가 되었다.<br>
+  살아남은 것은 최후의 왕과, 그의 곁을 지킨 단 한 사람.<br>
+  이제 그들은 자신들을 멸망시킨 제국의 낡은 아카데미에서,<br>
+  하루 30골드의 등록비를 치르며 다시 시작한다.<br>
+  — 잃어버린 왕관을 되찾기 위하여.</p>
+  <button class="enter" id="enterBtn">— 펼치기 —</button>
+  <div class="meta">몰락 군주의 아카데미 생존기 · 全 3部</div>
+</section>
+
+<!-- READER -->
+<main id="reader" style="display:none;">
+<!-- ══════════════ 序 ══════════════ -->
+<article class="chapter" data-part="第一部 — 잿더미의 왕" data-no="序" data-title="프롤로그 · 무너지는 밤">
+  <div class="ch-head">
+    <div class="ch-kicker">PROLOGUE</div>
+    <div class="ch-orn">✦ ⚜ ✦</div>
+    <div class="ch-title">무너지는 밤</div>
+    <div class="ch-sub">— 멘켄트 왕성, 함락의 날</div>
+  </div>
+
+  <p class="lead">불은 하늘까지 닿아 있었다. 천 년을 이어 온 멘켄트의 첨탑들이 하나씩 붉게 물들며 무너져 내렸고, 그 아래로 사람들의 비명이 강물처럼 흘렀다. 카시안은 알현실의 깨진 창가에 서서, 자신의 왕국이 재가 되어 가는 모습을 아무 말 없이 바라보고 있었다.</p>
+
+  <p>열아홉. 그 나이에 그는 왕국의 마지막 왕이 되었다. 아버지는 사흘 전 국경의 들판에서 창에 꿰뚫려 돌아왔고, 왕관은 아직 아이의 것이라기엔 너무 무거운 채로 그의 머리 위에 얹혔다. 그리고 오늘 밤, 그 왕관이 얹힌 성이 통째로 불타고 있었다.</p>
+
+  <p>“폐하.” 등 뒤에서 낮고 서늘한 목소리가 그를 불렀다. “시간이 없습니다.”</p>
+
+  <p class="dlg">돌아보지 않아도 그녀인 줄 알았다. 노아. 스무 살의 그의 비(妃)이자 서기, 그리고 이 왕국에서 유일하게 그를 배신하지 않은 사람. 검은 제복풍 코트 자락에 재와 핏방울이 얼룩져 있었지만, 그녀의 등은 여전히 곧았고 황금빛 눈동자는 조금도 흔들리지 않았다.</p>
+
+  <p>“노아.” 카시안은 겨우 입을 열었다. 목소리가 갈라졌다. “전부… 끝난 건가.”</p>
+
+  <p class="dlg">“왕국은 끝났습니다.” 그녀는 거짓을 말하지 않았다. 한 번도 그런 적이 없었다. “하지만 폐하는 아직 살아 계십니다. 그러니 아직 아무것도 끝나지 않았습니다.”</p>
+
+  <p>그녀가 그의 손목을 잡았다. 장갑 너머로도 느껴지는 서늘한 힘. 노아는 그를 무너진 회랑 쪽으로 이끌었다. 천장에서 불붙은 서까래가 떨어져 내렸고, 그녀는 몸을 틀어 카시안을 감싸며 그것을 등으로 받아 냈다. 살이 타는 냄새가 순간 코를 찔렀지만, 그녀는 신음 한 번 흘리지 않았다.</p>
+
+  <p class="dlg">“괜찮아—”</p>
+
+  <p class="dlg">“<span class="shout">앞만 보십시오, 폐하.</span>” 그녀가 처음이자 마지막으로 그의 말을 잘랐다. 그러고는 곧 목소리를 낮췄다. “뒤를 보는 건 제 일입니다. 폐하의 일은 살아남는 것뿐입니다.”</p>
+
+  <div class="scene">✦ ✦ ✦</div>
+
+  <p>지하 수로를 따라 성을 빠져나오는 데 반나절이 걸렸다. 제국군의 횃불이 물길 위로 어른거릴 때마다 노아는 카시안의 입을 막고 그를 그늘 속으로 눌렀다. 그녀의 심장 박동은 놀라울 만큼 고요했다. 마치 이 밤을 오래전부터 예상하고, 이미 수백 번 연습해 둔 사람처럼.</p>
+
+  <p>새벽녘, 두 사람은 무너진 성곽 밖 숲의 가장자리에 닿았다. 카시안은 그제야 뒤를 돌아보았다. 저 멀리, 자신이 태어나고 자란 왕성이 아직도 타오르고 있었다. 붉은 왕관 하나가 하늘에 걸린 것처럼.</p>
+
+  <p class="dlg">“노아.” 그는 물었다. “너는 왜 남았지. 다들 도망쳤는데. 재상도, 근위대장도, 나를 안아 키운 유모조차도. 왜 너만.”</p>
+
+  <p class="dlg">노아는 한동안 대답하지 않았다. 그녀는 귓가의 십자 귀걸이를 한 번 매만졌다. 감정이 흔들릴 때 나오는, 그녀의 유일한 버릇. 그리고 마침내 입을 열었을 때, 그 목소리는 서약처럼 낮고 단단했다.</p>
+
+  <blockquote>“왕국은 땅과 성으로 이루어진 것이 아닙니다, 폐하. 왕국은 왕으로 이루어집니다. 당신이 숨 쉬는 한, 멘켄트는 아직 멸망하지 않았습니다. 그러니 저는 남은 것이 아니라— 왕국과 함께 있는 것뿐입니다.”</p></blockquote>
+
+  <p>카시안은 아무 말도 할 수 없었다. 열아홉의 소년은, 자신의 어깨에 얹힌 것이 왕관이 아니라 이 여자의 신념 전체라는 사실을 그제야 깨달았다. 그것은 왕관보다 무거웠다.</p>
+
+  <p class="dlg">“이제 어디로 가지.” 그가 물었다.</p>
+
+  <p class="dlg">노아는 동쪽을 바라보았다. 제국의 심장부, 그들을 멸망시킨 자들의 땅. 그녀의 입가에 아주 옅은— 웃음이라기엔 너무 서늘한 미소가 걸렸다.</p>
+
+  <p class="dlg">“가장 안전한 곳은 언제나 적의 품속입니다.” 그녀가 말했다. “제국의 중앙 아카데미로 가겠습니다, 폐하. 아무도 몰락한 왕이 제 발로 제국의 학교에 걸어 들어오리라고는 상상하지 못할 테니까요.”</p>
+
+  <p>그렇게, 잿빛 왕관을 머리에 그린 소년과 그의 그림자 같은 비는, 자신들을 불태운 제국을 향해 걸음을 옮겼다. 뒤에서는 왕국이 무너지고 있었고, 앞에는 아무것도 없었다. 오직 살아남아야 한다는 사실 하나만이, 두 사람 사이에 남은 전부였다.</p>
+
+  <div class="scene">✦</div>
+  <p class="center whisper">— 그리고 반년 뒤, 이야기는 제국의 낡은 아카데미에서 다시 시작된다.</p>
+</article>
+
+<!-- ══════════════ 1 ══════════════ -->
+<article class="chapter" data-no="壹" data-title="30골드의 아침">
+  <div class="ch-head">
+    <div class="ch-kicker">CHAPTER ONE</div>
+    <div class="ch-orn">✦ ⚜ ✦</div>
+    <div class="ch-title">30골드의 아침</div>
+  </div>
+
+  <div class="place-wrap"><span class="place">🗓️ 月요일 · 🕐 이른 아침 · 🗺️ 제국 중앙 아카데미 · 개인 기숙사</span></div>
+
+  <p class="lead">아침을 알린 것은 종소리가 아니라, 지갑에서 골드가 빠져나가는 감각이었다.</p>
+
+  <p>카시안은 눈을 뜨자마자 낡은 침대 머리맡에 놓인 가죽 주머니를 확인했다. 어젯밤 백 골드였던 것이, 오늘 아침 일흔 골드로 줄어 있었다. 등록비 하루 30골드. 아카데미의 마법 장부가 밤사이 알아서 걷어 간 것이다. 어디에 쓰이는지는 아무도 몰랐다. 낡아 빠진 기숙사, 갈라진 벽, 삐걱대는 침대를 보면 최소한 건물 수리에 쓰이지 않는 것만은 분명했다.</p>
+
+  <p class="dlg">“일흔 골드로 이틀하고 조금.” 카시안은 중얼거렸다. “왕국의 국고를 관리하던 내가, 이제 동전 몇 개를 세고 있군.”</p>
+
+  <p class="dlg">“정확히는 예순아홉입니다, 폐하.” 방문 쪽에서 목소리가 들렸다. “새벽에 문틈으로 들어오려던 쥐가 있어, 아래층 관리인에게 한 골드를 주고 덫을 샀습니다. 낭비라 여기실 수 있으나, 폐하께서 쥐에게 물어뜯기는 것보다는 쌉니다.”</p>
+
+  <div class="figure"><div class="card">
+    <div class="sigil">🗡️</div><div class="nm">노아</div><div class="rl">폐하의 비 · 서기(로 위장한 모든 것)</div>
+  </div></div>
+
+  <p>노아는 이미 옷을 갖춰 입고 있었다. 아니, 어쩌면 잠을 자지 않았는지도 모른다. 검은 코트는 티끌 하나 없었고, 짙은 청색 포니테일은 흐트러짐 없이 묶여 있었다. 그녀는 문가에 서서, 낡은 방 안을 마치 왕의 알현실이라도 되는 양 정중히 바라보고 있었다.</p>
+
+  <p class="dlg">“잠은 잤나.” 카시안이 물었다.</p>
+
+  <p class="dlg">“필요한 만큼은.” 그녀는 대답을 회피했다. 그건 ‘아니오’라는 뜻이었다. “아침이 준비되었습니다. 어제 식당에서 남은 빵을 절반값에 흥정해 두었습니다. 따뜻하진 않지만, 오늘 하루 폐하의 위장을 채우기엔 충분합니다.”</p>
+
+  <p>카시안은 침대에서 일어나 창가로 걸어갔다. 유리는 절반쯤 깨져 나무판으로 덧대어져 있었고, 그 틈으로 아카데미의 전경이 내려다보였다. 한때 제국의 위신을 상징했다는 이 교육기관은, 지금은 무너진 위엄의 표본 같았다. 첨탑의 시계는 3시 47분에 멈춰 있었고, 안뜰의 분수는 물 대신 낙엽으로 가득했다. 그런데도 학생들은 매일 아침 30골드를 바치며 이곳에 남아 있었다. 갈 곳이 없어서, 혹은 여기 말고는 배울 곳이 없어서.</p>
+
+  <p class="dlg">“이상한 곳이야.” 카시안이 말했다. “무너지고 있는데, 아무도 무너뜨리려 하지 않아. 다들 돈을 내면서 함께 가라앉고 있어.”</p>
+
+  <p class="dlg">“가라앉는 배 위에서 가장 잘 보이는 것이 있습니다, 폐하.” 노아가 그의 곁에 섰다. “누가 물을 퍼내고, 누가 구멍을 파는지. 저는 그것이 궁금합니다. 이 30골드가 매일 어디로 흘러가는지 말입니다.”</p>
+
+  <p>그녀의 황금빛 눈이 안뜰 너머, 총장의 낡은 관저를 향했다. 카시안은 그 눈빛을 알았다. 사냥감을 정한 매의 눈이었다. 노아는 아카데미에 도착한 첫날부터 이곳의 돈이 흐르는 길을 추적하기 시작했고, 그것이 단순한 부패가 아니라는 걸 이미 냄새 맡고 있었다.</p>
+
+  <div class="infowin">
+    <div class="iw-t">◆ 情 報 ◆</div>
+    <div class="iw-row"><span class="iw-k">카시안 (신분: 편입생 · 위장)</span><span>남성</span></div>
+    <div class="iw-row"><span class="iw-k">💰 자금</span><span>69 G</span></div>
+    <div class="iw-row"><span class="iw-k">🏛 동아리</span><span>미가입</span></div>
+    <div class="iw-sec">≪ 의뢰 ≫</div>
+    <div class="iw-row"><span class="iw-k">📜</span><span>없음</span></div>
+    <div class="iw-sec">≪ 관계도 ≫</div>
+    <div class="iw-row"><span class="iw-k">노아</span><span>🥰 78 (절대 충성)</span></div>
+  </div>
+
+  <p class="dlg">“오늘 일정은.” 카시안이 물었다.</p>
+
+  <p class="dlg">“1교시 제국어, 3교시 역사. 사이에 오리엔테이션이 있습니다. 편입생은 반드시 참석해야 하며, 참석하지 않으면 벌금 5골드입니다.” 노아는 한 치의 망설임도 없이 읊었다. “그리고 오후에는— 총장 아벨 교수의 집무실에 다녀오시길 권합니다. 이곳에서 자금을 벌 수 있는 유일한 통로가 그녀의 ‘의뢰’이기 때문입니다. 하루 30골드씩 새어 나가는 이상, 폐하께는 수입이 필요합니다.”</p>
+
+  <p class="dlg">“왕이 의뢰를 받아 심부름을 한다.” 카시안은 헛웃음을 지었다. “아버지가 무덤에서 통곡하시겠군.”</p>
+
+  <p class="dlg">노아는 그를 정면으로 바라보았다. 그리고 아주 드물게, 목소리에 온기를 담았다.</p>
+
+  <p class="dlg">“살아 있는 왕이 심부름을 하는 것과, 죽은 왕의 위엄 중 무엇이 왕국을 다시 세울 수 있겠습니까.” 그녀가 말했다. “저는 전자를 택하겠습니다. 폐하께서도 그러시길 바랍니다.”</p>
+
+  <p>카시안은 그녀를 마주 보았다. 반년 전, 불타는 성에서 그녀가 했던 말이 떠올랐다. <em>당신이 숨 쉬는 한, 멘켄트는 아직 멸망하지 않았다.</em> 그는 낡은 외투를 걸치고, 예순아홉 골드가 든 가벼운 주머니를 허리에 찼다. 왕관 대신.</p>
+
+  <p class="dlg">“가자.” 그가 말했다. “왕의 하루를 시작하지. 30골드짜리 하루를.”</p>
+</article>
+
+<!-- ══════════════ 2 ══════════════ -->
+<article class="chapter" data-no="貳" data-title="가장 시끄러운 교실">
+  <div class="ch-head">
+    <div class="ch-kicker">CHAPTER TWO</div>
+    <div class="ch-orn">✦ ⚜ ✦</div>
+    <div class="ch-title">가장 시끄러운 교실</div>
+  </div>
+
+  <div class="place-wrap"><span class="place">🗓️ 月요일 · 🕐 1교시 제국어 · 🗺️ 서관 3층 강의실</span></div>
+
+  <p class="lead">강의실은 절반이 비어 있었고, 나머지 절반은 지나치게 시끄러웠다.</p>
+
+  <p>카시안이 문을 열고 들어섰을 때, 스무 명 남짓한 학생들이 저마다의 방식으로 무너진 아침을 견디고 있었다. 뒷줄에서는 두 학생이 마른 빵을 걸고 카드를 쳤고, 창가에서는 누군가 엎드려 자고 있었으며, 교탁은 비어 있었다. 제국어를 가르쳐야 할 교수 루나는 아직 도착하지 않았거나— 노아의 말에 따르면— 이미 도착했으나 다른 세계에 가 있는 중이었다.</p>
+
+  <p class="dlg">“어머, 새 얼굴이다!”</p>
+
+  <p>목소리는 밝고 높았다. 카시안이 고개를 돌리자, 금발을 느슨하게 땋아 내린 소녀가 벌써 눈앞까지 다가와 있었다. 눈은 호기심으로 반짝였고, 입가에는 사람을 무장 해제시키는 웃음이 걸려 있었다.</p>
+
+  <div class="figure"><div class="card">
+    <div class="sigil">🎀</div><div class="nm">샬롯</div><div class="rl">귀족가 출신 · 사교 동아리</div>
+  </div></div>
+
+  <p class="dlg">“편입생 맞지? 이런 망해 가는 학교에 제 발로 들어오는 사람이 아직도 있다니, 완전 신기해!” 샬롯은 손을 내밀었다. “난 샬롯. 이 무너지는 배의 유일한 분위기 메이커야. 너 이름은?”</p>
+
+  <p class="dlg">“…카시안.” 그는 잠시 망설였다. 이름을 밝히는 것조차 위험이 될 수 있다는 반년의 습관 때문이었다. 하지만 흔한 이름이었고, 왕가의 성은 밝히지 않았다. “그냥 카시안이야.”</p>
+
+  <p class="dlg">“그냥 카시안!” 샬롯은 그 말을 되풀이하며 까르르 웃었다. “좋아, 그냥 카시안. 저기 자는 애는 신경 쓰지 마. 아벨 교수님 수업 아니면 절대 안 깨어나거든. 저 뒤에서 카드 치는 애들도 신경 쓰지 마. 다 잃을 게 없는 애들이야. 그리고 저기—” 그녀가 목소리를 살짝 낮췄다. “저 창가 끝자리 애는 특히 신경 쓰지 마.”</p>
+
+  <p>카시안의 시선이 창가로 향했다. 그곳에는 한 소녀가 홀로 앉아 있었다. 은빛에 가까운 잿빛 머리칼, 창백하도록 흰 피부, 그리고 세상 전부를 얕잡아보는 듯한 서늘한 눈매. 그녀는 낡은 책을 펼쳐 든 채, 주변의 소음을 완전히 차단한 사람처럼 미동도 없었다. 옷차림은 다른 학생들보다 낡았지만, 등을 세운 자세만큼은 이 교실에서 가장 고귀했다.</p>
+
+  <p class="dlg">“루인.” 샬롯이 속삭였다. “몰락한 백작가 딸이야. 성적은 이 학교 최고인데, 성격이… 음, 좀 그래. 말 걸었다가 얼어 죽은 애들이 한둘이 아니거든. 예쁘긴 진짜 예쁜데, 가시가 장미보다 많아.”</p>
+
+  <p>몰락한 백작가. 카시안의 안에서 무언가 조용히 반응했다. 그 역시 몰락한 자였으므로. 그는 자기도 모르게 그녀 쪽으로 한 걸음 다가갔다.</p>
+
+  <p class="dlg">“여기 앉아도 될까.” 그가 물었다. 루인의 옆자리를 가리키며.</p>
+
+  <p>루인은 책에서 눈을 떼지 않았다. 몇 초간 정적이 흘렀다. 이윽고, 얼음장 같은 목소리가 종잇장을 넘기는 소리와 함께 흘러나왔다.</p>
+
+  <div class="figure"><div class="card">
+    <div class="sigil">❄️</div><div class="nm">루인</div><div class="rl">몰락 백작가 · 왕실기사 동아리</div>
+  </div></div>
+
+  <p class="dlg">“여긴 더럽게 시끄러워.” 루인이 말했다. 여전히 책을 보며. “네가 앉으면 더 시끄러워지겠지. 그러니 사양할게.”</p>
+
+  <p class="dlg">“조용히 앉을게.” 카시안은 물러서지 않았다. 왕이었던 자에게 이 정도 냉대는 겨울 아침의 찬 공기 같은 것이었다. “너도 시끄러운 걸 싫어하는 것 같아서. 조용한 사람 둘이 앉으면, 시끄러운 자리 하나가 줄어들잖아.”</p>
+
+  <p>그 말에, 루인이 처음으로 책에서 눈을 들었다. 잿빛 눈동자가 카시안을 훑었다. 위아래로, 값을 매기듯. 낡은 외투, 지친 눈, 그러나 굽히지 않는 등. 그녀의 눈이 아주 미세하게 가늘어졌다. 마치 예상과 다른 물건을 발견한 상인처럼.</p>
+
+  <p class="dlg">“…마음대로 해.” 그녀는 다시 책으로 시선을 돌렸다. “대신 말은 걸지 마. 나는 친구를 만들러 여기 온 게 아니니까.”</p>
+
+  <p class="dlg">“나도 그래.” 카시안은 옆자리에 앉았다. “친구를 만들러 온 게 아니야.”</p>
+
+  <p>루인의 손이 아주 잠깐, 책장을 넘기다 멈췄다. 그녀는 곁눈으로 이 낯선 편입생을 다시 한번 보았다. 대부분의 인간은 그녀의 냉대 앞에서 두 가지 반응을 보였다. 상처받아 물러나거나, 오기로 들러붙거나. 그런데 이 남자는— 그저 담담했다. 마치 냉대가 익숙한 사람처럼. 잃을 만큼 잃어 본 사람처럼.</p>
+
+  <p>그때 강의실 문이 스르르 열리고, 몽롱한 눈의 여교수가 들어왔다. 손에는 교재 대신 시든 꽃 한 송이가 들려 있었다.</p>
+
+  <p class="dlg">“여러분…” 루나 교수의 목소리는 안개처럼 흐릿했다. “달빛이… 어젯밤 저에게 제국어의 세 번째 격변화를 알려 줬어요. 하지만… 지금은 그게 기억나지 않네요. 오늘은 그냥… 창밖을 볼까요.”</p>
+
+  <p>학생 절반이 신음했고, 절반은 안도했다. 카시안은 뒷목을 짚었다. 왕국에서라면 이런 교사는 하루 만에 파면되었을 것이다. 그러나 이곳은 제국의 중앙 아카데미— 위엄의 폐허였고, 이것이 그가 살아남아야 할 새로운 전장이었다.</p>
+
+  <div class="infowin">
+    <div class="iw-t">◆ 情 報 ◆</div>
+    <div class="iw-row"><span class="iw-k">카시안</span><span>남성</span></div>
+    <div class="iw-row"><span class="iw-k">💰 자금</span><span>69 G</span></div>
+    <div class="iw-row"><span class="iw-k">🏛 동아리</span><span>미가입</span></div>
+    <div class="iw-sec">≪ 의뢰 ≫</div>
+    <div class="iw-row"><span class="iw-k">📜</span><span>없음</span></div>
+    <div class="iw-sec">≪ 관계도 ≫</div>
+    <div class="iw-row"><span class="iw-k">노아</span><span>🥰 78</span></div>
+    <div class="iw-row"><span class="iw-k">샬롯</span><span>🙂 32 (신규)</span></div>
+    <div class="iw-row"><span class="iw-k">루인</span><span>😐 5 (신규)</span></div>
+  </div>
+</article>
+
+<!-- ══════════════ 3 ══════════════ -->
+<article class="chapter" data-no="參" data-title="술에 젖은 총장">
+  <div class="ch-head">
+    <div class="ch-kicker">CHAPTER THREE</div>
+    <div class="ch-orn">✦ ⚜ ✦</div>
+    <div class="ch-title">술에 젖은 총장</div>
+  </div>
+
+  <div class="place-wrap"><span class="place">🗓️ 月요일 · 🕐 오후 · 🗺️ 본관 총장 집무실</span></div>
+
+  <p class="lead">집무실 문을 열자, 술 냄새가 먼저 마중을 나왔다.</p>
+
+  <p>아벨 총장의 집무실은 아카데미에서 가장 넓은 방이었지만, 동시에 가장 어질러진 방이기도 했다. 책상 위에는 결재해야 할 서류가 산더미처럼 쌓여 있었고, 그 산 정상에는 빈 술병이 깃발처럼 꽂혀 있었다. 40대 초반의 여교수는 창가의 낡은 안락의자에 반쯤 늘어져, 잔에 든 호박색 액체를 흔들고 있었다.</p>
+
+  <div class="figure"><div class="card">
+    <div class="sigil">🍷</div><div class="nm">아벨</div><div class="rl">아카데미 총장 · 냉소와 술의 사도</div>
+  </div></div>
+
+  <p class="dlg">“편입생이군.” 아벨은 고개도 들지 않고 말했다. “의뢰를 받으러 왔겠지. 다들 그래. 돈이 새니까. 하루 30골드. 지독한 학교야, 그렇지 않나?”</p>
+
+  <p class="dlg">“어디로 새는지 아십니까.” 카시안이 물었다.</p>
+
+  <p>그 질문에, 아벨의 손이 잔 위에서 멈췄다. 그녀는 처음으로 고개를 들어 카시안을 바라보았다. 붉게 충혈된 눈 안쪽에, 놀랍도록 날카로운 지성이 도사리고 있었다. 술에 절어 있었지만, 그것은 어리석음이 아니라 포기의 흔적이었다. 이 여자는 한때 무언가였다— 카시안은 직감했다.</p>
+
+  <p class="dlg">“…재밌는 질문이군.” 아벨은 헛웃음을 지었다. “보통은 ‘얼마나 벌 수 있냐’고 묻거든. ‘어디로 새냐’고 묻는 건 네가 처음이야.” 그녀는 잔을 내려놓았다. “대답해 주지. 나도 몰라. 총장인 나조차도. 그게 이 학교의 진짜 병이야, 편입생. 아무도 진실을 모르는데, 모두가 값을 치르고 있지.”</p>
+
+  <p>그녀는 산더미 같은 서류 속에서 한 장을 뽑아 던졌다. 카시안이 받아 든 종이에는, 짧은 의뢰가 적혀 있었다.</p>
+
+  <blockquote>「도서관 지하 서고에서 사라진 회계 장부 한 권을 찾아올 것. 보상 40골드. — 단, 지하에는 아무도 내려가려 하지 않는다. 이유는 직접 알아내도록.」</blockquote>
+
+  <p class="dlg">“쉬운 심부름은 아니야.” 아벨이 다시 잔을 들었다. “하지만 40골드면 이 지옥에서 하루하고 반나절을 더 버틸 수 있지. 받겠나, 아니면 다른 애들처럼 벽지 청소나 하겠나. 벽지 청소는 5골드다.”</p>
+
+  <p class="dlg">“받겠습니다.” 카시안은 망설이지 않았다. 사실 그가 원한 것은 40골드가 아니었다. <em>회계 장부.</em> 노아가 그토록 찾던, 돈이 새는 길을 밝혀 줄 열쇠일지도 몰랐다. 아벨의 의뢰와 노아의 추적이 우연히 같은 곳을 가리키고 있었다.</p>
+
+  <p>아벨은 그를 잠시 바라보다가, 다시 술로 시선을 돌렸다. 그러나 그가 문을 나서려 할 때, 등 뒤로 그녀의 목소리가 낮게 따라붙었다.</p>
+
+  <p class="dlg">“편입생.” 아벨이 말했다. “충고 하나 하지. 이 학교에서 너무 많은 걸 알려고 하지 마라. 나도 예전엔 다 알고 싶어 했거든. 그 결과가—” 그녀는 손에 든 잔을 들어 보였다. “이거다. 진실은 술보다 독하고, 술은 진실보다 싸지. 그래서 나는 매일 싼 쪽을 택해.”</p>
+
+  <p class="dlg">“저는 비싼 쪽을 택하겠습니다.” 카시안은 대답했다. “저는 이미 모든 걸 잃어 봤거든요. 진실 정도는 감당할 수 있습니다.”</p>
+
+  <p>아벨은 잔을 입가에 대다 말고, 그의 등을 오래 바라보았다. 저 어린 편입생의 말투에는— 열아홉이라기엔 지나치게 무거운 무언가가 있었다. 상실을 아는 자의 목소리. 그녀는 오랜만에, 아주 오랜만에 잔을 내려놓고 술을 마시지 않았다.</p>
+
+  <div class="infowin">
+    <div class="iw-t">◆ 情 報 ◆</div>
+    <div class="iw-row"><span class="iw-k">카시안</span><span>남성</span></div>
+    <div class="iw-row"><span class="iw-k">💰 자금</span><span>69 G</span></div>
+    <div class="iw-row"><span class="iw-k">🏛 동아리</span><span>미가입</span></div>
+    <div class="iw-sec">≪ 의뢰 ≫</div>
+    <div class="iw-row"><span class="iw-k">📜</span><span>사라진 회계 장부 찾기 | 0% | 40G</span></div>
+    <div class="iw-sec">≪ 관계도 ≫</div>
+    <div class="iw-row"><span class="iw-k">노아</span><span>🥰 78</span></div>
+    <div class="iw-row"><span class="iw-k">샬롯</span><span>🙂 32</span></div>
+    <div class="iw-row"><span class="iw-k">루인</span><span>😐 5</span></div>
+    <div class="iw-row"><span class="iw-k">아벨</span><span>😐 12 (신규)</span></div>
+  </div>
+</article>
+
+<!-- ══════════════ 4 ══════════════ -->
+<article class="chapter" data-no="肆" data-title="지하 서고의 촛불">
+  <div class="ch-head">
+    <div class="ch-kicker">CHAPTER FOUR</div>
+    <div class="ch-orn">✦ ⚜ ✦</div>
+    <div class="ch-title">지하 서고의 촛불</div>
+  </div>
+
+  <div class="place-wrap"><span class="place">🗓️ 月요일 · 🕐 해 질 녘 · 🗺️ 도서관 지하 서고</span></div>
+
+  <p class="lead">지하로 내려가는 계단은, 살아 있는 사람의 것이 아닌 냉기를 뿜었다.</p>
+
+  <p>카시안이 촛불을 들고 첫 번째 계단에 발을 딛자, 곁에서 노아가 조용히 그의 반 걸음 앞으로 나섰다. 그녀는 언제나 그렇게 섰다. 위험이 있을지 모르는 방향에, 항상 반 걸음 먼저.</p>
+
+  <p class="dlg">“제가 앞장서겠습니다.” 노아가 낮게 말했다. “아벨 총장의 말이 사실이라면, 이 아래엔 학생들이 내려가지 않는 이유가 있습니다. 이유가 있는 곳에는 언제나 위험이 함께 있습니다.”</p>
+
+  <p class="dlg">“유령이 나온다는 소문이더군.” 카시안이 말했다. 샬롯이 강의실을 나서며 신이 나서 들려준 이야기였다. “밤마다 지하에서 촛불이 혼자 움직이고, 책 넘기는 소리가 들린다고.”</p>
+
+  <p class="dlg">“유령은 골드를 훔치지 않습니다, 폐하.” 노아의 목소리에 서늘한 확신이 담겼다. “장부를 감춘 것은 산 사람입니다. 그리고 산 사람이 밤마다 촛불을 켜는 이유는 하나뿐입니다. 누군가 이 아래에서— 무언가를 계속하고 있다는 뜻입니다.”</p>
+
+  <p>서고는 미로였다. 천장까지 닿은 책장이 끝없이 이어졌고, 대부분의 책은 습기에 부풀어 썩어 가고 있었다. 제국의 지식이 이렇게 방치되어 있다는 사실에, 카시안은 기묘한 감정을 느꼈다. 제국은 그의 왕국을 부수었지만, 정작 자신의 것도 지키지 못하고 있었다. 승자의 폐허. 그것이 이 아카데미의 정체였다.</p>
+
+  <p>서고의 가장 깊은 곳, 마지막 책장 뒤에서— 그들은 촛불을 발견했다. 소문 그대로였다. 촛불 하나가 홀로 타오르고 있었다. 그러나 유령의 것이 아니었다. 그 아래, 낡은 책상에 한 여인이 앉아 무언가를 필사하고 있었다.</p>
+
+  <div class="figure"><div class="card">
+    <div class="sigil">🕯️</div><div class="nm">마거릿</div><div class="rl">교수 · 신념의 사제</div>
+  </div></div>
+
+  <p>마거릿 교수. 30대 후반의 그녀는 촛불 아래에서 눈을 번뜩이며, 두꺼운 장부에 무언가를 옮겨 적고 있었다. 인기척을 느낀 그녀가 천천히 고개를 들었다. 그 얼굴에는 광기와 카리스마가 기묘하게 뒤섞여 있었다.</p>
+
+  <p class="dlg">“내려온 자가 있군.” 마거릿의 목소리는 예배당의 사제처럼 울렸다. “오랜만이야. 이 아래는 신성한 곳이다. 진실이 잠든 곳. 너희는… 신도인가, 아니면 도둑인가?”</p>
+
+  <p class="dlg">“도둑도 신도도 아닙니다.” 카시안이 대답했다. “총장의 의뢰로 사라진 회계 장부를 찾으러 왔습니다. 그 손에 든 것이 그것입니까.”</p>
+
+  <p>마거릿은 장부를 가슴에 끌어안았다. 그녀의 눈이 광적으로 빛났다.</p>
+
+  <p class="dlg">“이것은 장부가 아니다. <span class="shout">이것은 경전이다.</span>” 그녀가 외쳤다. 그 목소리가 서고의 어둠 속에서 메아리쳤다. “아카데미의 돈이 어디로 흐르는지— 그 진실을 나는 매일 밤 여기 옮겨 적는다. 왜냐하면 그 흐름 속에, 우리가 섬겨야 할 새로운 신의 뜻이 담겨 있기 때문이다. 너희는 그 뜻을 감당할 수 있나?”</p>
+
+  <p>노아가 조용히 앞으로 나섰다. 그녀의 손이 코트 안쪽— 카시안조차 그 안에 무엇이 들었는지 다 알지 못하는 곳으로 향했다. 그러나 그녀는 무기를 꺼내지 않았다. 대신, 마거릿을 향해 서늘하게 물었다.</p>
+
+  <p class="dlg">“그 돈이 흐르는 종착지가 어디입니까.” 노아가 물었다. “당신이 매일 밤 그것을 옮겨 적는 이유는, 누군가 원본이 사라지길 바라기 때문이겠지요. 당신은 사본을 만들고 있는 겁니다. 누구를 위해서입니까.”</p>
+
+  <p>마거릿의 광기 어린 미소가 순간 굳었다. 이 낯선 여자는— 너무 정확했다. 마치 처음부터 모든 것을 알고 있었던 사람처럼. 촛불이 흔들렸고, 서고의 어둠이 세 사람을 더 깊이 삼켰다.</p>
+
+  <p class="dlg">“…흥미롭군.” 마거릿이 천천히 일어섰다. “너희 둘은 평범한 학생이 아니야. 그 눈. 그 걸음. 특히 너—” 그녀가 노아를 가리켰다. “너는 사람을 죽여 본 눈을 하고 있어. 좋아. 신은 준비된 자에게만 진실을 허락하지. 이 장부를 원한다면— 하나만 대답해라.”</p>
+
+  <p>그녀는 촛불을 들어 올려 카시안의 얼굴을 비췄다.</p>
+
+  <p class="dlg">“<span class="shout">너는 무너진 것을 다시 세우려는 자인가, 무너뜨린 것 위에 새로 지으려는 자인가.</span>”</p>
+
+  <p>질문은 기묘했지만, 카시안은 그것이 자신의 심장을 정확히 겨누고 있음을 느꼈다. 무너진 왕국을 다시 세우려는 자— 그것이 바로 그였다. 그러나 이 여자 앞에서 진실을 말하는 것은 위험했다. 그는 노아를 힐끗 보았다. 그녀의 눈이 아주 미세하게 움직였다. <em>신중하게.</em></p>
+
+  <p class="dlg">“무너진 것에는,” 카시안은 천천히 말했다. “다시 세울 가치가 있는 것과 없는 것이 있습니다. 저는 아직 이 학교가 어느 쪽인지 판단하는 중입니다. 그 장부가— 제 판단을 도와줄 겁니다.”</p>
+
+  <p>마거릿은 한동안 그를 응시했다. 그러고는 뜻밖에도, 껄껄 웃었다. 광기 어린 웃음이 서고를 가득 채웠다.</p>
+
+  <p class="dlg">“좋은 대답이다.” 그녀가 장부를 책상 위에 내려놓았다. “가져가라. 어차피 사본은 내 머릿속에 있으니. 다만 기억해라, 편입생. 그 장부를 펼치는 순간— 너는 이 학교의 진짜 신을 만나게 될 것이다. 그리고 신을 본 자는, 다시는 평범한 학생으로 돌아갈 수 없지.”</p>
+
+  <p>카시안은 장부를 집어 들었다. 표지는 낡았지만, 그 안에 담긴 것은— 노아의 반년치 추적을 단숨에 뛰어넘을 열쇠였다. 촛불 아래에서, 그는 처음으로 이 무너진 아카데미의 심장 박동을 손에 쥐었다고 느꼈다.</p>
+
+  <div class="infowin">
+    <div class="iw-t">◆ 情 報 ◆</div>
+    <div class="iw-row"><span class="iw-k">카시안</span><span>남성</span></div>
+    <div class="iw-row"><span class="iw-k">💰 자금</span><span>69 G</span></div>
+    <div class="iw-row"><span class="iw-k">🏛 동아리</span><span>미가입</span></div>
+    <div class="iw-sec">≪ 의뢰 ≫</div>
+    <div class="iw-row"><span class="iw-k">📜</span><span>사라진 회계 장부 찾기 | 90% | 40G</span></div>
+    <div class="iw-sec">≪ 관계도 ≫</div>
+    <div class="iw-row"><span class="iw-k">노아</span><span>🥰 78</span></div>
+    <div class="iw-row"><span class="iw-k">샬롯</span><span>🙂 32</span></div>
+    <div class="iw-row"><span class="iw-k">루인</span><span>😐 5</span></div>
+    <div class="iw-row"><span class="iw-k">아벨</span><span>😐 12</span></div>
+    <div class="iw-row"><span class="iw-k">마거릿</span><span>🤨 −8 (신규 · 경계)</span></div>
+  </div>
+</article>
+
+<!-- ══════════════ 5 ══════════════ -->
+<article class="chapter" data-no="伍" data-title="장부가 말하는 것">
+  <div class="ch-head">
+    <div class="ch-kicker">CHAPTER FIVE</div>
+    <div class="ch-orn">✦ ⚜ ✦</div>
+    <div class="ch-title">장부가 말하는 것</div>
+  </div>
+
+  <div class="place-wrap"><span class="place">🗓️ 月요일 · 🕐 심야 · 🗺️ 기숙사 · 촛불 하나</span></div>
+
+  <p class="lead">장부는 거짓말을 하지 않았다. 그것이 가장 무서운 점이었다.</p>
+
+  <p>기숙사로 돌아온 두 사람은 촛불 하나에 의지해 장부를 펼쳤다. 노아의 손가락이 숫자들 위를 빠르게 미끄러졌다. 그녀는 왕국의 국고를 관리하던 사람이었다. 숫자의 언어를 읽는 데 있어서 그녀를 능가할 자는, 이 대륙에 몇 없었다.</p>
+
+  <p class="dlg">“하루 30골드.” 노아가 중얼거렸다. “학생 수는 대략 이백. 하루 6천 골드. 한 달이면 십팔만 골드입니다. 그런데—” 그녀의 손가락이 멈췄다. “장부상 아카데미 운영비로 지출되는 것은 그중 5분의 1도 되지 않습니다. 나머지는…”</p>
+
+  <p>그녀는 장부의 마지막 장을 펼쳤다. 그곳에는 반복해서 등장하는 하나의 이름이 있었다. 아니, 이름이 아니라— 문양이었다. 쌍두(雙頭)의 독수리. 카시안의 얼굴에서 핏기가 가셨다.</p>
+
+  <p class="dlg">“…제국 황실.” 그가 속삭였다. “제국 황실의 문양이야.”</p>
+
+  <p class="dlg">“네.” 노아의 목소리는 놀랍도록 차분했지만, 그녀의 손가락은 무의식적으로 귓가의 십자 귀걸이를 매만지고 있었다. 감정이 흔들리고 있다는 증거였다. “이 아카데미는 학교가 아닙니다, 폐하. 이것은— 자금 세탁소입니다. 제국은 몰락한 학교라는 껍데기를 씌워 두고, 학생들의 등록비를 모아 어딘가로 흘려보내고 있습니다. 그리고 그 종착지는 황실입니다.”</p>
+
+  <p>카시안은 자리에서 일어나 창가로 갔다. 깨진 유리 너머로 제국의 밤하늘이 펼쳐져 있었다. 그를 멸망시킨 자들의 하늘. 그의 손이 떨렸다. 분노 때문이 아니었다. 아니, 분노도 있었지만— 그보다 더 큰 것은, 공포였다.</p>
+
+  <p class="dlg">“노아.” 그가 낮게 말했다. “우리는 하필 제국의 비밀 금고 위에 숨어든 거야. 가장 안전한 곳이 적의 품속이라고 했지. 그런데 우리는 적의 품속이 아니라— 적의 심장을 베고 누운 거였어.”</p>
+
+  <p>노아가 그의 곁으로 다가왔다. 그녀는 언제나처럼 반 걸음 앞이 아니라, 이번에는 그의 바로 옆에 섰다. 그리고 아주 조용히, 그의 떨리는 손 위에 자신의 손을 겹쳤다. 그녀의 손은 서늘했지만, 그 서늘함이 이상하게도 그를 진정시켰다.</p>
+
+  <p class="dlg">“폐하.” 노아가 말했다. “두려워하실 것 없습니다. 오히려 반대입니다.” 그녀의 황금빛 눈이 촛불 속에서 빛났다. “적의 심장 위에 누웠다는 것은— 우리가 그 심장을 언제든 멈출 수 있는 곳에 있다는 뜻입니다. 이 장부는 위협이 아니라 무기입니다. 제국이 몰락한 학교로 무엇을 하는지, 그 증거를 우리가 손에 쥐었으니까요.”</p>
+
+  <p class="dlg">“…너는 두렵지 않나.” 카시안이 물었다. “단 한 번도?”</p>
+
+  <p>노아는 잠시 침묵했다. 그리고 그녀는, 아주 드문 일이지만— 진심을 드러냈다.</p>
+
+  <p class="dlg">“두렵습니다.” 그녀가 말했다. “매일 밤 두렵습니다. 폐하를 잃을까 봐. 반년 전 그 불타는 성에서, 저는 세상 모든 것을 잃었습니다. 오직 폐하 한 분만 남았지요. 그래서 저는 두려움을 아예 다른 것으로 바꾸기로 했습니다.”</p>
+
+  <p class="dlg">“무엇으로.”</p>
+
+  <p class="dlg">“각오로.” 노아가 대답했다. “두려운 만큼 각오합니다. 폐하를 잃는 것이 두려운 만큼, 저는 그 무엇도 폐하께 닿지 못하게 하겠다고 각오합니다. 제국의 심장이든, 황제 본인이든— 폐하 앞을 지나려면 먼저 저를 지나야 할 것입니다.”</p>
+
+  <p>촛불이 조용히 흔들렸다. 카시안은 자신의 손 위에 겹쳐진 그녀의 손을 바라보았다. 반년 동안, 그는 이 여자의 충성에 얼마나 기대어 왔는가. 그리고 그 충성이 실은 얼마나 무거운 사랑인지, 그는 이제야 조금씩 알아 가고 있었다. 그러나 그 사랑에 어떻게 답해야 할지는— 아직 알지 못했다. 노아는 결코 자신을 위해 무언가를 바라지 않는 사람이었으므로.</p>
+
+  <div class="infowin">
+    <div class="iw-t">◆ 情 報 ◆</div>
+    <div class="iw-row"><span class="iw-k">카시안</span><span>남성</span></div>
+    <div class="iw-row"><span class="iw-k">💰 자금</span><span>69 G</span></div>
+    <div class="iw-row"><span class="iw-k">🏛 동아리</span><span>미가입</span></div>
+    <div class="iw-sec">≪ 의뢰 ≫</div>
+    <div class="iw-row"><span class="iw-k">📜</span><span>사라진 회계 장부 찾기 | 100% | 보상 대기</span></div>
+    <div class="iw-sec">≪ 관계도 ≫</div>
+    <div class="iw-row"><span class="iw-k">노아</span><span>🥰 79 ▲</span></div>
+    <div class="iw-row"><span class="iw-k">샬롯</span><span>🙂 32</span></div>
+    <div class="iw-row"><span class="iw-k">루인</span><span>😐 5</span></div>
+    <div class="iw-row"><span class="iw-k">아벨</span><span>😐 12</span></div>
+    <div class="iw-row"><span class="iw-k">마거릿</span><span>🤨 −8</span></div>
+  </div>
+  <p class="center whisper">— 제1부, 계속.</p>
+</article>
+
+<!--CHAPTERS-->
+</main>
+
+<button id="gototop">↑</button>
+
+<script>
+const chapters = Array.from(document.querySelectorAll('.chapter'));
+const tocList = document.getElementById('tocList');
+const reader = document.getElementById('reader');
+let cur = 0;
+
+// build TOC
+chapters.forEach((ch,i)=>{
+  if(ch.dataset.part){
+    const p=document.createElement('div');
+    p.className='toc-item part';p.textContent='❖ '+ch.dataset.part;
+    tocList.appendChild(p);
+  }
+  const it=document.createElement('div');
+  it.className='toc-item';it.dataset.i=i;
+  it.innerHTML='<span class="num">'+(ch.dataset.no||'')+'</span>'+ch.dataset.title;
+  it.onclick=()=>{go(i);closeToc();};
+  tocList.appendChild(it);
+});
+const tocItems=[...tocList.querySelectorAll('.toc-item:not(.part)')];
+
+function go(i,noScroll){
+  if(i<0||i>=chapters.length)return;
+  chapters[cur].classList.remove('show');
+  cur=i;
+  chapters[cur].classList.add('show');
+  tocItems.forEach(t=>t.classList.toggle('act',+t.dataset.i===i));
+  const act=tocItems.find(t=>+t.dataset.i===i);
+  if(act)act.scrollIntoView({block:'nearest'});
+  buildNav();
+  localStorage.setItem('ac_ch',i);
+  if(!noScroll)window.scrollTo(0,0);
+}
+function buildNav(){
+  chapters.forEach((ch,i)=>{
+    let nav=ch.querySelector('.chnav');
+    if(nav)nav.remove();
+    nav=document.createElement('div');nav.className='chnav';
+    const prev=chapters[i-1], next=chapters[i+1];
+    nav.innerHTML=
+      '<button class="prev" '+(prev?'':'disabled')+'>'+
+        '<span class="lbl">◀ 이전</span>'+(prev?prev.dataset.title:'처음')+'</button>'+
+      '<button class="next" '+(next?'':'disabled')+'>'+
+        '<span class="lbl">다음 ▶</span>'+(next?next.dataset.title:'끝')+'</button>';
+    nav.querySelector('.prev').onclick=()=>go(i-1);
+    nav.querySelector('.next').onclick=()=>go(i+1);
+    ch.appendChild(nav);
+  });
+}
+
+// TOC drawer
+const tocwrap=document.getElementById('tocwrap');
+document.getElementById('menuBtn').onclick=()=>tocwrap.classList.add('open');
+document.getElementById('tocbg').onclick=closeToc;
+function closeToc(){tocwrap.classList.remove('open');}
+
+// enter / cover
+const cover=document.getElementById('cover');
+function enter(){cover.classList.add('hide');reader.style.display='block';
+  const saved=+localStorage.getItem('ac_ch')||0;go(saved);}
+document.getElementById('enterBtn').onclick=enter;
+document.getElementById('brandHome').onclick=()=>{cover.classList.remove('hide');reader.style.display='none';window.scrollTo(0,0);};
+
+// font
+let fs=parseFloat(localStorage.getItem('ac_fs'))||19;
+function applyFs(){document.documentElement.style.setProperty('--fs',fs+'px');localStorage.setItem('ac_fs',fs);}
+document.getElementById('fontUp').onclick=()=>{fs=Math.min(26,fs+1);applyFs();};
+document.getElementById('fontDown').onclick=()=>{fs=Math.max(15,fs-1);applyFs();};
+applyFs();
+
+// theme
+if(localStorage.getItem('ac_theme')==='paper')document.body.classList.add('paper');
+document.getElementById('themeBtn').onclick=()=>{
+  document.body.classList.toggle('paper');
+  localStorage.setItem('ac_theme',document.body.classList.contains('paper')?'paper':'dark');
+};
+
+// progress + gototop
+const prog=document.getElementById('progress'),gt=document.getElementById('gototop');
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement.scrollHeight-window.innerHeight;
+  prog.style.width=(h>0?window.scrollY/h*100:0)+'%';
+  gt.classList.toggle('show',window.scrollY>500);
+});
+gt.onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
+
+// keyboard
+document.addEventListener('keydown',e=>{
+  if(cover.classList.contains('hide')===false)return;
+  if(e.key==='ArrowRight')go(cur+1);
+  if(e.key==='ArrowLeft')go(cur-1);
+});
+buildNav();
+</script>
+</body>
+</html>
